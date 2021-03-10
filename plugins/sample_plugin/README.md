@@ -4,7 +4,19 @@ Provide a short description of your plugin here.
 
 ## Installation
 
-How does the user install your plugin so they can use it?
+It is possible to install individual plugins from this repository, as long as the plugin has a valid setup.py. If you copied the `sample_plugin` directory, it has a starter setup.py in it.
+
+Installation will take this form:
+
+```
+pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=[your_plugin_name]&subdirectory=[your_plugin_subdirectory]"
+```
+
+For example, to install this sample plugin, the following line could be used.
+
+```
+pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=sample_plugin&subdirectory=plugins/sample_plugin"
+```
 
 ## Considerations
 
