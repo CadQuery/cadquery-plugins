@@ -7,7 +7,7 @@ description = 'What does your plugin do?'
 long_description = 'Extended explanation of your plugin'
 author = 'Your name'
 author_email = 'optional, you can put GitHub user name instead'
-packages = ['sample_plugin'] # List of packages that will be installed with this plugin
+packages = [] # List of packages that will be installed with this plugin
 install_requires = [] # Any dependencies that pip also needs to install to make this plugin work
 
 
