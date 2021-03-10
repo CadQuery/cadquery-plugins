@@ -1,4 +1,4 @@
-from setuptools import setup
+from distutils.core import setup
 
 # Change these variables to set the information for your plugin
 version = '1.0.0' # Please update this version number when updating the plugin
@@ -8,6 +8,7 @@ long_description = 'Extended explanation of your plugin'
 author = 'Your name'
 author_email = 'optional, you can put GitHub user name instead'
 packages = [] # List of packages that will be installed with this plugin
+py_modules = ['sampleplugin'] # Put the name of your plugin's .py file here
 install_requires = [] # Any dependencies that pip also needs to install to make this plugin work
 
 
@@ -21,6 +22,7 @@ setup(
     description=description,
     long_description=long_description,
     packages=packages,
+    py_modules=py_modules,
     install_requires=install_requires,
     include_package_data=True,
     zip_safe=False,
