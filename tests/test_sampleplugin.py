@@ -1,5 +1,5 @@
 import cadquery as cq
-import plugins.sample_plugin as sp
+import plugins.sampleplugin
 
 def test_basic_operation():
     """

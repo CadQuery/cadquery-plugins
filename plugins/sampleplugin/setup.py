@@ -2,7 +2,7 @@ from setuptools import setup
 
 # Change these variables to set the information for your plugin
 version = '1.0.0' # Please update this version number when updating the plugin
-plugin_name = 'sample_plugin' # The name of your plugin
+plugin_name = 'sampleplugin' # The name of your plugin
 description = 'What does your plugin do?'
 long_description = 'Extended explanation of your plugin'
 author = 'Your name'

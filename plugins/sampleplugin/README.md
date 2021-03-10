@@ -15,7 +15,7 @@ pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=[your_p
 For example, to install this sample plugin, the following line could be used.
 
 ```
-pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=sample_plugin&subdirectory=plugins/sample_plugin"
+pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=sampleplugin&subdirectory=plugins/sampleplugin"
 ```
 
 ## Considerations

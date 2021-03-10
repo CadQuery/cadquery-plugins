@@ -1,7 +1,7 @@
 import cadquery as cq
 
 def make_cubes(self, length):
-    # self refers to the CQ or Workplane object
+    # self refers to the Workplane object
 
     # create the solid
     s = cq.Solid.makeBox(length, length, length, cq.Vector(0, 0, 0))
