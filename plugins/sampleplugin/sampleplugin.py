@@ -19,12 +19,3 @@ def make_cubes(self, length):
 
 # Patch the function(s) into the Workplane class
 cq.Workplane.make_cubes = make_cubes
-
-
-# def register():
-#     """
-#     Makes plugin functions available in the cadquery.Workplane class.
-#     Needs to be called before this plugin's functions can be used.
-#     """
-
-#     cq.Workplane.make_cubes = make_cubes
