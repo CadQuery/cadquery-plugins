@@ -25,15 +25,17 @@ This plugin has no dependencies other than the cadquery library.
 To use this plugin after it has been installed, just import it and use the selectors as regular cadquery selectors
 
 ```python
+# Import the Hollow Sphere Selector
 import cadquery as cq
-from more_selectors import InfHollowCylinderSelector
+from more_selectors import HollowSphereSelector
 
-# Adds the make_cubes function to cadquery.Workplane
-sampleplugin.register()
-
-result = (cq.Workplane().circle(20).circle(10).extrude(30)
+result = (cq.Workplane().sphere(10)
+                        .polarArray(10,0,360,6, rotate=True)
+                        .box(3,3,8)
                         .edges(
-                            InfHollowCylinderSelector((0,0,0), "Z", 25, 12)
+                            HollowSphereSelector((0,0,0), 15, 10, debug= True)
                         )
-                        .fillet(3)
+                        .fillet(0.5))
+
 ```
+<img src="images/readme_example.PNG" width="600"/>
