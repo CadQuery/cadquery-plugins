@@ -13,18 +13,30 @@ def deb(obj, name=None):
     except:
         pass
 
-def make_cylinder(plane, radius, height = None):
+def make_debug_cylinder(plane, outer_radius, inner_radius=None, height = None):
     infinite = False
     if height is None:
         infinite = True
         height = 10000
-
-    cyl = cq.Workplane(plane).circle(radius).extrude(height,both = infinite)
+    if inner_radius is None:
+        cyl = cq.Workplane(plane).circle(outer_radius).extrude(height,both = infinite)
+    else:
+        cyl = cq.Workplane(plane).circle(outer_radius).circle(inner_radius).extrude(height,both = infinite)
     try:
         show_object(cyl, name = "selected cylinder", options={"alpha":0.7, "color": (64, 164, 223)})
     except NameError:
         pass
 
+def make_debug_sphere(origin, outer_radius, inner_radius = None):
+    if inner_radius is None:
+        sphere = cq.Workplane().transformed(offset=origin).sphere(outer_radius)
+    else:
+        inner_sphere = cq.Workplane().transformed(offset=origin).sphere(inner_radius)
+        sphere = cq.Workplane().transformed(offset=origin).sphere(outer_radius).cut(sphere)
+    try:
+        show_object(sphere, name = "selected sphere", options={"alpha":0.7, "color": (64, 164, 223)})
+    except NameError:
+        pass       
 
 class InfiniteCylinderSelector(cq.Selector):
     """
@@ -33,13 +45,12 @@ class InfiniteCylinderSelector(cq.Selector):
 
     """
     def __init__(self, origin, along_axis, radius, debug=False):
-
-        self.r = radius
+        self.outer_radius = radius
         self.axis = self.get_axis(along_axis)
         xdir = self.get_ortho_vector(self.axis)
         self.base = cq.Plane(cq.Vector(origin), xdir, self.axis.toTuple())
         if debug:
-            make_cylinder(self.base, radius)
+            make_debug_cylinder(self.base, radius)
 
     def get_axis(self, axis_value):
         named_vectors = {
@@ -80,22 +91,43 @@ class InfiniteCylinderSelector(cq.Selector):
             projected_p = self.base.toLocalCoords(p)
             p_radius = sqrt(projected_p.x**2 + projected_p.y**2)
 
-            if p_radius < self.r:   
+            if p_radius < self.outer_radius:   
                 result.append(o)
                     
 
         return result
 
+class HollowInfCylinderSelector(InfiniteCylinderSelector):
+    """
+    Selects any shape present in the defined infinite hollow  
+    cylinder based on the shape center of mass point.   
+    """
+    def __init__(self, origin, along_axis, outer_radius, inner_radius, debug=False):
+        super().__init__(origin, along_axis, outer_radius, debug=False)
+        self.inner_radius = inner_radius
+        if debug:
+            make_debug_cylinder(self.base, self.outer_radius, inner_radius = self.inner_radius)
+    def filter(self, objectList):
+        result =[]
+        for o in objectList:            
+            p = o.Center()
+            projected_p = self.base.toLocalCoords(p)
+            p_radius = sqrt(projected_p.x**2 + projected_p.y**2)
+
+            if p_radius < self.outer_radius and p_radius > self.inner_radius:   
+                result.append(o)   
+        return result
+
 class CylinderSelector(InfiniteCylinderSelector):
     """
-    Selects any shape present in the defined cylinder.   
-
+    Selects any shape present in the defined cylinder 
+    based on the shape center of mass point.   
     """
     def __init__(self, origin, along_axis, height, radius, debug=False):
-        super().__init__(origin,along_axis, radius)
+        super().__init__(origin, along_axis, radius)
         self.height = height
         if debug:
-            make_cylinder(self.base, radius, height)
+            make_debug_cylinder(self.base, radius, height)
 
     def filter(self, objectList):
         result =[]
@@ -104,15 +136,74 @@ class CylinderSelector(InfiniteCylinderSelector):
             projected_p = self.base.toLocalCoords(p)
             p_radius = sqrt(projected_p.x**2 + projected_p.y**2)
 
-            if p_radius < self.r and (projected_p.z < self.height and projected_p.z > 0):   
-                result.append(o)                   
-
+            if p_radius < self.outer_radius and (projected_p.z < self.height and projected_p.z > 0):   
+                result.append(o)   
         return result
 
+class HollowCylinderSelector(HollowInfCylinderSelector):
+    """
+    Selects any shape present in the defined hollow cylinder 
+    based on the shape center of mass point.   
+    """
+    def __init__(self, origin, along_axis, height, outer_radius, inner_radius, debug=False):
+        super().__init__(origin, along_axis, outer_radius, inner_radius)
+        self.height = height
+    def filter(self, objectList):
+        result =[]
+        for o in objectList:            
+            p = o.Center()
+            projected_p = self.base.toLocalCoords(p)
+            p_radius = sqrt(projected_p.x**2 + projected_p.y**2)
+
+            if (p_radius < self.outer_radius and p_radius > self.inner_radius) and (projected_p.z < self.height and projected_p.z > 0):   
+                result.append(o)   
+        return result
+
+class SphereSelector(cq.Selector):
+    """
+    Selects any shape present in the defined sphere
+    based on the shape center of mass point.   
+    """
+    def __init__(self, origin, radius, debug=False):
+        self.origin = origin
+        self.outer_radius = radius
+        if debug:
+            make_debug_sphere(origin, radius)
+    def filter(self, objectList):
+        result =[]
+        for o in objectList:            
+            p = o.Center()
+            projected_p = p - self.origin
+            p_radius = sqrt(projected_p.x**2 + projected_p.y**2 + projected_p**2)
+
+            if (p_radius < self.outer_radius):
+                result.append(o)   
+        return result
+
+class SphereSelector(cq.Selector):
+    """
+    Selects any shape present in the defined hollow sphere
+    based on the shape center of mass point.   
+    """   
+    def __init__(self, origin, outer_radius, inner_radius, debug=False):
+        super().__init__(origin, outer_radius)
+        self.inner_radius = inner_radius
+    def filter(self, objectList):
+        result =[]
+        for o in objectList:            
+            p = o.Center()
+            projected_p = p - self.origin
+            p_radius = sqrt(projected_p.x**2 + projected_p.y**2 + projected_p**2)
+
+            if (p_radius < self.outer_radius and p_radius > self.inner_radius):
+                result.append(o)   
+        return result
+
+
 # cyl = make_cylinder(cq.Plane((0,10,0), (1,0,0), (0,1,1)), 5, 4)
-select = cq.Workplane().box(10,10,10).edges(CylinderSelector((3,3,2),(0,0,1), 6, 6, debug=True))
-select = cq.Workplane().box(10,10,10).edges(InfiniteCylinderSelector((3,3,2), "X", 6, debug=True))
+select = cq.Workplane().box(10,10,10).edges(CylinderSelector((3,3,2),(0,0,1), 6, 6, debug=False))
+select = cq.Workplane().box(10,10,10).edges(InfiniteCylinderSelector((3,3,2), "X", 6, debug=False))
 # deb(cq.Workplane().box(10,10,10))
-show(select, name = "selec")
+
 
 
