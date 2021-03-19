@@ -1,42 +1,8 @@
 import cadquery as cq
 from math import sqrt
-# from utils import make_cylinder
-
-def show(obj, name= None):
-    try:
-        show_object(obj, name)
-    except:
-        pass
-def deb(obj, name=None):
-    try:
-        debug(obj, name)
-    except:
-        pass
-
-def make_debug_cylinder(plane, outer_radius, inner_radius=None, height = None):
-    infinite = False
-    if height is None:
-        infinite = True
-        height = 10000
-    if inner_radius is None:
-        cyl = cq.Workplane(plane).circle(outer_radius).extrude(height,both = infinite)
-    else:
-        cyl = cq.Workplane(plane).circle(outer_radius).circle(inner_radius).extrude(height,both = infinite)
-    try:
-        show_object(cyl, name = "selected cylinder", options={"alpha":0.7, "color": (64, 164, 223)})
-    except NameError:
-        pass
-
-def make_debug_sphere(origin, outer_radius, inner_radius = None):
-    if inner_radius is None:
-        sphere = cq.Workplane().transformed(offset=origin).sphere(outer_radius)
-    else:
-        inner_sphere = cq.Workplane().transformed(offset=origin).sphere(inner_radius)
-        sphere = cq.Workplane().transformed(offset=origin).sphere(outer_radius).cut(sphere)
-    try:
-        show_object(sphere, name = "selected sphere", options={"alpha":0.7, "color": (64, 164, 223)})
-    except NameError:
-        pass       
+from more_selectors_utils import make_debug_cylinder, make_debug_sphere
+import more_selectors_utils
+     
 
 class InfiniteCylinderSelector(cq.Selector):
     """
@@ -97,7 +63,7 @@ class InfiniteCylinderSelector(cq.Selector):
 
         return result
 
-class HollowInfCylinderSelector(InfiniteCylinderSelector):
+class InfHollowCylinderSelector(InfiniteCylinderSelector):
     """
     Selects any shape present in the defined infinite hollow  
     cylinder based on the shape center of mass point.   
@@ -140,7 +106,7 @@ class CylinderSelector(InfiniteCylinderSelector):
                 result.append(o)   
         return result
 
-class HollowCylinderSelector(HollowInfCylinderSelector):
+class HollowCylinderSelector(InfHollowCylinderSelector):
     """
     Selects any shape present in the defined hollow cylinder 
     based on the shape center of mass point.   
@@ -180,7 +146,7 @@ class SphereSelector(cq.Selector):
                 result.append(o)   
         return result
 
-class SphereSelector(cq.Selector):
+class HollowSphereSelector(SphereSelector):
     """
     Selects any shape present in the defined hollow sphere
     based on the shape center of mass point.   
