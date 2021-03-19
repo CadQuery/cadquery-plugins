@@ -1,6 +1,5 @@
 import cadquery as cq
 def make_debug_cylinder(plane, outer_radius, inner_radius=None, height = None):
-    print("fct is called")
     infinite = False
     if height is None:
         infinite = True
@@ -10,8 +9,7 @@ def make_debug_cylinder(plane, outer_radius, inner_radius=None, height = None):
     else:
         cyl = cq.Workplane(plane).circle(outer_radius).circle(inner_radius).extrude(height,both = infinite)
     try:
-        print("show_object_is_called")
-        show_object(cyl, name = "selected cylinder", options={"alpha":0.7, "color": (64, 164, 223)})
+        show_object(cyl, name = "selection cylinder", options={"alpha":0.7, "color": (64, 164, 223)})
 
     except NameError:
         pass
@@ -23,6 +21,6 @@ def make_debug_sphere(origin, outer_radius, inner_radius = None):
         inner_sphere = cq.Workplane().transformed(offset=origin).sphere(inner_radius)
         sphere = cq.Workplane().transformed(offset=origin).sphere(outer_radius).cut(inner_sphere)
     try:
-        show_object(sphere, name = "selected sphere", options={"alpha":0.7, "color": (64, 164, 223)})
+        show_object(sphere, name = "selection sphere", options={"alpha":0.7, "color": (64, 164, 223)})
     except NameError:
         pass 

@@ -1,49 +1,39 @@
-# Sample Plugin
+# more_selectors
 
-[Provide a short description of your plugin here.]
-
-This sample plugin gives an example of how to build a plugin that is installable from this repository. Once installed, it should be possible to import and register the plugin, making it available for use as if it was part of the `cadquery.Workplane` class.
+This plugin provide additionals selectors that can be useful in some situations. Since too much Selectors can be overwhelming there are available here rather than directly in cadquery.
+If some of these selectors are judged worth to add to cadquery it may happen also.
+If you want to add your own selectors to the plugin you can do it by opening a pull request
 
 ## Installation
-
-[How does a user install your plugin?]
-
-It is possible to install individual plugins from this repository, as long as the plugin has a valid setup.py. If you copied the `sampleplugin` directory, it has a starter setup.py in it.
-
-Installation takes form:
-
-```
-pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=[your_plugin_name]&subdirectory=[your_plugin_subdirectory]"
-```
 
 To install this sample plugin, the following line should be used.
 
 ```
-pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=sampleplugin&subdirectory=plugins/sampleplugin"
+pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=more_selectors&subdirectory=plugins/more_selectors"
+```
+You can also clone the repository of the plugin and run in the repository the following command :
+```
+python setup.py install
 ```
 
 ## Dependencies
 
-[Are there any other dependencies that need to be installed for your plugin to work?]
-
-[Is there anything else that is different about your plugin that the user needs to know?]
-
-This sample plugin has no dependencies other than the cadquery library.
+This plugin has no dependencies other than the cadquery library.
 
 ## Usage
 
-[Place descriptions and examples of how to use your plugin here.]
-
-To use this plugin after it has been installed, import it and then call its `register` function to patch its function(s) into the `cadquery.Workplane` class.
+To use this plugin after it has been installed, just import it and use the selectors as regular cadquery selectors
 
 ```python
 import cadquery as cq
-from sampleplugin import sampleplugin
+from more_selectors import InfHollowCylinderSelector
 
 # Adds the make_cubes function to cadquery.Workplane
 sampleplugin.register()
 
-result = (cq.Workplane().rect(50, 50, forConstruction=True)
-                        .vertices()
-                        .make_cubes(10))
+result = (cq.Workplane().circle(20).circle(10).extrude(30)
+                        .edges(
+                            InfHollowCylinderSelector((0,0,0), "Z", 25, 12)
+                        )
+                        .fillet(3)
 ```

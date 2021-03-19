@@ -1,7 +1,7 @@
 from distutils.core import setup
 
 # Change these variables to set the information for your plugin
-version = '0.0.1' # Please update this version number when updating the plugin
+version = '1.0.0' # Please update this version number when updating the plugin
 plugin_name = 'more_selectors' # The name of your plugin
 description = 'Add more selectors to cadquery '
 long_description = ''
