@@ -1,5 +1,5 @@
 import cadquery as cq
-from plugins.more_selectors.more_selectors import (HollowCylinderSelector,
+from more_selectors import (HollowCylinderSelector,
                                     InfiniteCylinderSelector,
                                     CylinderSelector,
                                     InfHollowCylinderSelector,

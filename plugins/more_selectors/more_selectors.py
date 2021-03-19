@@ -1,7 +1,6 @@
 import cadquery as cq
 from math import sqrt
-from more_selectors_utils import make_debug_cylinder, make_debug_sphere
-import more_selectors_utils
+from utils import make_debug_cylinder, make_debug_sphere
      
 
 class InfiniteCylinderSelector(cq.Selector):
@@ -166,10 +165,11 @@ class HollowSphereSelector(SphereSelector):
         return result
 
 
-# cyl = make_cylinder(cq.Plane((0,10,0), (1,0,0), (0,1,1)), 5, 4)
-select = cq.Workplane().box(10,10,10).edges(CylinderSelector((3,3,2),(0,0,1), 6, 6, debug=False))
-select = cq.Workplane().box(10,10,10).edges(InfiniteCylinderSelector((3,3,2), "X", 6, debug=False))
-# deb(cq.Workplane().box(10,10,10))
 
+# if __name__ == "__main__":
+    # Visuals tests for cq-editor using debug=True, attribute of the selectors __init__ fct
+test_infinite_cylinder = cq.Workplane().circle(5).extrude(10).edges(InfiniteCylinderSelector((0,0,5), "Z", 5, debug=True))
+
+# show_object(test_infinite_cylinder)
 
 

@@ -1,14 +1,14 @@
 from distutils.core import setup
 
 # Change these variables to set the information for your plugin
-version = '1.0.0' # Please update this version number when updating the plugin
-plugin_name = 'sampleplugin' # The name of your plugin
-description = 'What does your plugin do?'
-long_description = 'Extended explanation of your plugin'
-author = 'Your name'
-author_email = 'optional, you can put GitHub user name instead'
+version = '0.0.1' # Please update this version number when updating the plugin
+plugin_name = 'more_selectors' # The name of your plugin
+description = 'Add more selectors to cadquery '
+long_description = ''
+author = 'Romain FERRU'
+author_email = 'Romain.ferru@gmail.com'
 packages = [] # List of packages that will be installed with this plugin
-py_modules = ['sampleplugin'] # Put the name of your plugin's .py file here
+py_modules = ["more_selectors", "utils"] # Put the name of your plugin's .py file here
 install_requires = [] # Any dependencies that pip also needs to install to make this plugin work
 
 

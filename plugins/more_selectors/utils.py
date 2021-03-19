@@ -1,5 +1,6 @@
 import cadquery as cq
 def make_debug_cylinder(plane, outer_radius, inner_radius=None, height = None):
+    print("fct is called")
     infinite = False
     if height is None:
         infinite = True
@@ -9,7 +10,9 @@ def make_debug_cylinder(plane, outer_radius, inner_radius=None, height = None):
     else:
         cyl = cq.Workplane(plane).circle(outer_radius).circle(inner_radius).extrude(height,both = infinite)
     try:
+        print("show_object_is_called")
         show_object(cyl, name = "selected cylinder", options={"alpha":0.7, "color": (64, 164, 223)})
+
     except NameError:
         pass
 
