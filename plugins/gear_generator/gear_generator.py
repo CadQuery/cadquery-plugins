@@ -10,6 +10,22 @@ def involute(r, sign = 1):
         return x,sign*y
     return curve
 
+def test_bevel_parameters(m, z, b, r_inner, delta, alpha, phi, clearance, r_f_equiv, r_b_equiv):
+    """
+    Handles all wrong sets of parameters with some feedback for the user rather than the usual "BREP API command not done"
+    """
+    if z % 2 != 0:
+        raise ValueError(f"Number of teeths z must be even, try with {z-1} or {z+1}")
+    if r_b_equiv < r_f_equiv:
+        raise ValueError(f"Base radius < root radius leads to undercut gear. Undercut gears are not supported.\nTry with different values of parameters m, z or alpha")
+    h_f = 1.25*m
+    r_f_inner = r_inner - h_f*cos(delta)
+    clearance_max = r_f_inner / sin(phi)
+    if clearance > clearance_max:
+        raise ValueError(f"Too much clearance, for this set of parameters clearance must be <= {round(clearance_max,3)}")
+
+
+
 def make_bevel_tooth_gap_wire(Z_W, m, phi, r_a, r_f, r_base):
     """
     Make the tooth gap wire that will be used to cut the base shape
@@ -32,6 +48,7 @@ def make_bevel_tooth_gap_wire(Z_W, m, phi, r_a, r_f, r_base):
     pt_top_left = left.vertices(">X").val()
     pt_bot_left = bot_left.vertices("<X").val()
     pt_bot_mid = cq.Workplane("XY", origin=(0,0,Z_W)).transformed(rotate=(0,-90+degrees(phi),0)).pushPoints([(r_f,0)]).val()
+    #TODO : make top an arc instead of a straight line
     top = cq.Edge.makeLine(cq.Vector(pt_top_right.toTuple()), cq.Vector(pt_top_left.toTuple()))
     bot = cq.Edge.makeThreePointArc(cq.Vector(pt_bot_left.toTuple()),
                                     cq.Vector(pt_bot_mid.toTuple()),
@@ -40,10 +57,12 @@ def make_bevel_tooth_gap_wire(Z_W, m, phi, r_a, r_f, r_base):
     return wire
 
 
-def _make_bevel_gear(self, m, z, b, delta, alpha, clearance):
+def make_bevel_gear(self, m, z, b, delta, alpha = 20, clearance = None):
     """
     Make a bevel gear based on the specified parameters
     """
+
+
     # PARAMETERS
     delta = radians(delta) # cone angle
     phi = pi/2 - delta # complementary cone angle
@@ -57,7 +76,12 @@ def _make_bevel_gear(self, m, z, b, delta, alpha, clearance):
     h_a = m # addendum
     Z_P = -r/tan(delta) 
     Z_P_inner = - r_inner/tan(delta)
-    Z_W =  (Z_P - r/tan(phi))*1.0000001 # This allow for the tooth gap wire to be shifted otherwise leads to failing cut operation
+    Z_W =  (Z_P - r/tan(phi))*1.0000001 # This allow for the tooth gap wire to be slightly shifted otherwise leads to failing cut operation
+    if clearance is None:
+        clearance = 0.2*r
+    # Test if input parameters make a valid gear
+    
+    test_bevel_parameters(m, z, b, r_inner, delta, alpha, phi, clearance, r_f_equiv, r_base_equiv) 
 
     #Definition of bevel half cross section points
     A = (r + h_a*cos(delta), 0, Z_P + h_a*sin(delta))
@@ -98,17 +122,19 @@ def _make_bevel_gear(self, m, z, b, delta, alpha, clearance):
     gear = base.cut(final_cutter)
     return self.eachpoint(lambda loc: gear.located(loc), True)
 
-m = 0.75
-z = 16
-alpha = 20
-delta = 40
-b = 4 # L/4 <= b <= L/3
-clearance = 4
-
-cq.Workplane.make_bevel_gear=_make_bevel_gear
-test= cq.Workplane("ZY").polarArray(30, 0, 360, 10).make_bevel_gear(m, z, b, delta, alpha, clearance)
-
-show_object(test)
+def make_bevel_gear_system(m, z1, z2, b, alpha=20, clearance = None, compound = False):
+    """
+    Make a system of bevel gear achieving the required gear ratio defined by:
+    GR = z1/z2
+    """
+    delta_1 = degrees(atan2(z2,z1))
+    delta_2 = degrees(atan2(z1,z2))
+    gear1 = cq.Workplane("XY").make_bevel_gear(m, z, b, delta_1, alpha = alpha, clearance = clearance)                                
+    gear2 = cq.Workplane("YZ").make_bevel_gear(m, z, b, delta_2, alpha = alpha, clearance = clearance)
+    if compound:
+        return cq.Compound.makeCompound([gear1.val(), gear2.val()])
+    else:
+        return gear1, gear2
 
 def involute_gear(m, z, alpha=20, shift=0, N=8):
     '''
@@ -183,7 +209,20 @@ def involute_gear(m, z, alpha=20, shift=0, N=8):
 
     return res.val()
 
+m = 1
+z = 24
+alpha = 20
+delta = 45
+b = 3*m # L/4 <= b <= L/3
+clearance = 2*m
 
-# show_object(
-#     cq.Workplane(obj=involute_gear(1, 20)).toPending().twistExtrude(30, 45)
-# )
+cq.Workplane.make_bevel_gear = make_bevel_gear
+cq.Workplane.make_bevel_gear_system = make_bevel_gear_system
+test= cq.Workplane("XY").make_bevel_gear(m, z, b, delta, alpha, clearance)
+# test = cq.Workplane("XZ", obj=test.val()).split(keepBottom=True)
+# c = cq.Workplane("XY", origin=(0,0,-16.08)).circle(10.2)#.extrude(-20) #10.69
+
+system = make_bevel_gear_system(2,18,24,3, compound=True)
+
+show_object(system)
+# show_object(test)
