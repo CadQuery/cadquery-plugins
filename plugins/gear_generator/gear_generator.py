@@ -32,12 +32,12 @@ def make_bevel_tooth_gap_wire(Z_W, m, phi, r_a, r_f, r_base):
     """
     STOP = 2*sqrt((r_a/r_base)**2 - 1) # 2* To be sure to have extra working room
     #right side
-    right = (cq.Workplane("XY", origin=(0,0,Z_W)).transformed(rotate=(-pi*m/2,-90+degrees(phi),0))
+    right = (cq.Workplane("XY", origin=(0,0,Z_W)).transformed(rotate=(-pi*m,-90+degrees(phi),0))
             .tag("baseplane")
             .parametricCurve(involute(r_base), N=8, stop=STOP, makeWire=False))           
     bot_right = right.moveTo(r_f,0).hLine(r_base-r_f)
     #left side           
-    left = (cq.Workplane("XY", origin=(0,0,Z_W)).transformed(rotate=(pi*m/2,-90+degrees(phi),0))
+    left = (cq.Workplane("XY", origin=(0,0,Z_W)).transformed(rotate=(pi*m,-90+degrees(phi),0))
             .moveTo(r_f,0)
             .hLine(r_base-r_f)
             .parametricCurve(involute(r_base, sign=-1), N=8, stop=STOP, makeWire=False))             
@@ -210,19 +210,18 @@ def involute_gear(m, z, alpha=20, shift=0, N=8):
     return res.val()
 
 m = 1
-z = 24
+z = 16
 alpha = 20
 delta = 45
-b = 3*m # L/4 <= b <= L/3
-clearance = 2*m
+b = 2 # L/4 <= b <= L/3
+# clearance = 2*m
 
 cq.Workplane.make_bevel_gear = make_bevel_gear
-cq.Workplane.make_bevel_gear_system = make_bevel_gear_system
-test= cq.Workplane("XY").make_bevel_gear(m, z, b, delta, alpha, clearance)
-# test = cq.Workplane("XZ", obj=test.val()).split(keepBottom=True)
+# cq.Workplane.make_bevel_gear_system = make_bevel_gear_system
+test= cq.Workplane("XY").make_bevel_gear(m, z, b, delta, alpha)
 # c = cq.Workplane("XY", origin=(0,0,-16.08)).circle(10.2)#.extrude(-20) #10.69
 
-system = make_bevel_gear_system(2,18,22,3, compound=True)
-
+system = make_bevel_gear_system(1,24,14,2, compound=True)
+# 
 show_object(system)
 # show_object(test)
