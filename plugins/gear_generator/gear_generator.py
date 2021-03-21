@@ -222,7 +222,7 @@ test= cq.Workplane("XY").make_bevel_gear(m, z, b, delta, alpha, clearance)
 # test = cq.Workplane("XZ", obj=test.val()).split(keepBottom=True)
 # c = cq.Workplane("XY", origin=(0,0,-16.08)).circle(10.2)#.extrude(-20) #10.69
 
-system = make_bevel_gear_system(2,18,24,3, compound=True)
+system = make_bevel_gear_system(2,18,22,3, compound=True)
 
 show_object(system)
 # show_object(test)
