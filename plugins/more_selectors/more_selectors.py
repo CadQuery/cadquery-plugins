@@ -1,6 +1,6 @@
 import cadquery as cq
 from math import sqrt
-from utils import make_debug_cylinder, make_debug_sphere
+from .utils import make_debug_cylinder, make_debug_sphere
 
 #These function only works when they are in the run file
 """
