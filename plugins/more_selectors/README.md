@@ -6,7 +6,7 @@ If you want to add your own selectors to the plugin you can do it by opening a p
 
 ## Installation
 
-To install this sample plugin, the following line should be used.
+To install this plugin, the following line should be used.
 
 ```
 pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=more_selectors&subdirectory=plugins/more_selectors"
