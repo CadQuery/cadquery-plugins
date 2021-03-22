@@ -1,6 +1,6 @@
 # more_selectors
 
-This plugin provide additionals selectors that can be useful in some situations. Since too much Selectors can be overwhelming there are available here rather than directly in cadquery.
+This plugin provide additionals selectors that can be useful in some situations. Since too much Selectors can be overwhelming they are available here rather than directly in cadquery.
 If some of these selectors are judged worth to add to cadquery it may happen also.
 If you want to add your own selectors to the plugin you can do it by opening a pull request
 
