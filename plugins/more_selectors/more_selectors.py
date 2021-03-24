@@ -1,35 +1,8 @@
 import cadquery as cq
 from math import sqrt
 from .utils import make_debug_cylinder, make_debug_sphere
+  
 
-#These function only works when they are in the run file
-"""
-def make_debug_cylinder(plane, outer_radius, inner_radius=None, height = None):
-    infinite = False
-    if height is None:
-        infinite = True
-        height = 1000
-    if inner_radius is None:
-        cyl = cq.Workplane(plane).circle(outer_radius).extrude(height,both = infinite)
-    else:
-        cyl = cq.Workplane(plane).circle(outer_radius).circle(inner_radius).extrude(height,both = infinite)
-    try:
-        show_object(cyl, name = "selection cylinder", options={"alpha":0.7, "color": (64, 164, 223)})
-
-    except NameError:
-        pass
-
-def make_debug_sphere(origin, outer_radius, inner_radius = None):
-    if inner_radius is None:
-        sphere = cq.Workplane().transformed(offset=origin).sphere(outer_radius)
-    else:
-        inner_sphere = cq.Workplane().transformed(offset=origin).sphere(inner_radius)
-        sphere = cq.Workplane().transformed(offset=origin).sphere(outer_radius).cut(inner_sphere)
-    try:
-        show_object(sphere, name = "selection sphere", options={"alpha":0.7, "color": (64, 164, 223)})
-    except NameError:
-        pass      
-"""
 class InfiniteCylinderSelector(cq.Selector):
     """
     Selects any shape present in the defined infinite cylinder 
@@ -95,6 +68,8 @@ class InfHollowCylinderSelector(InfiniteCylinderSelector):
     cylinder based on the shape center of mass point.   
     """
     def __init__(self, origin, along_axis, outer_radius, inner_radius, debug=False):
+        if outer_radius < inner_radius:
+            raise ValueError("outer_radius must be greater than inner_radius")
         super().__init__(origin, along_axis, outer_radius, debug=False)
         self.inner_radius = inner_radius
         if debug:
@@ -138,8 +113,6 @@ class HollowCylinderSelector(InfHollowCylinderSelector):
     based on the shape center of mass point.   
     """
     def __init__(self, origin, along_axis, height, outer_radius, inner_radius, debug=False):
-        if outer_radius < inner_radius:
-            raise ValueError("outer_radius must be greater than inner_radius")
         super().__init__(origin, along_axis, outer_radius, inner_radius)
         self.height = height
         if debug:
@@ -198,4 +171,3 @@ class HollowSphereSelector(SphereSelector):
             if (p_radius < self.outer_radius and p_radius > self.inner_radius):
                 result.append(o)   
         return result
-
