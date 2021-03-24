@@ -17,10 +17,5 @@ def make_cubes(self, length):
     return self.eachpoint(lambda loc: s.located(loc), True)
 
 
-def register():
-    """
-    Makes plugin functions available in the cadquery.Workplane class.
-    Needs to be called before this plugin's functions can be used.
-    """
-
-    cq.Workplane.make_cubes = make_cubes
+# Patch the function(s) into the Workplane class
+cq.Workplane.make_cubes = make_cubes
