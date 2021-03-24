@@ -8,7 +8,7 @@ from plugins.more_selectors.more_selectors import (HollowCylinderSelector,
                                
 def test_CylinderSelector():
     """
-    Test that the HollowCylinderSelector selects the right number of entities
+    Test that the CylinderSelector selects the right number of entities
     """
     boxes = cq.Workplane().box(10,10,10).moveTo(15,0).box(5,5,5)
     vertices = boxes.vertices(CylinderSelector((5,0,3), "Z",8, 6))

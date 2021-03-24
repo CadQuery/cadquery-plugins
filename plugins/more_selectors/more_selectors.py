@@ -1,7 +1,7 @@
 import cadquery as cq
 from math import sqrt
-from .utils import make_debug_cylinder, make_debug_sphere
-  
+from . import utils
+
 
 class InfiniteCylinderSelector(cq.Selector):
     """
@@ -15,7 +15,7 @@ class InfiniteCylinderSelector(cq.Selector):
         xdir = self.get_ortho_vector(self.axis)
         self.base = cq.Plane(cq.Vector(origin), xdir, self.axis.toTuple())
         if debug:
-            make_debug_cylinder(self.base, self.outer_radius)
+            utils.make_debug_cylinder(self.base, self.outer_radius)
 
     def get_axis(self, axis_value):
         named_vectors = {
@@ -73,7 +73,8 @@ class InfHollowCylinderSelector(InfiniteCylinderSelector):
         super().__init__(origin, along_axis, outer_radius, debug=False)
         self.inner_radius = inner_radius
         if debug:
-            make_debug_cylinder(self.base, self.outer_radius, inner_radius = self.inner_radius)
+            utils.make_debug_cylinder(self.base, self.outer_radius, inner_radius = self.inner_radius)
+
     def filter(self, objectList):
         result =[]
         for o in objectList:            
@@ -94,7 +95,7 @@ class CylinderSelector(InfiniteCylinderSelector):
         super().__init__(origin, along_axis, radius)
         self.height = height
         if debug:
-            make_debug_cylinder(self.base, radius, height=height)
+            utils.make_debug_cylinder(self.base, radius, height=height)
 
     def filter(self, objectList):
         result =[]
@@ -116,7 +117,8 @@ class HollowCylinderSelector(InfHollowCylinderSelector):
         super().__init__(origin, along_axis, outer_radius, inner_radius)
         self.height = height
         if debug:
-            make_debug_cylinder(self.base, outer_radius, inner_radius=inner_radius, height=height)
+            utils.make_debug_cylinder(self.base, outer_radius, inner_radius=inner_radius, height=height)
+
     def filter(self, objectList):
         result =[]
         for o in objectList:            
@@ -137,7 +139,8 @@ class SphereSelector(cq.Selector):
         self.origin = cq.Vector(origin)
         self.outer_radius = radius
         if debug:
-            make_debug_sphere(origin, radius)
+            utils.make_debug_sphere(origin, radius)
+
     def filter(self, objectList):
         result =[]
         for o in objectList:            
@@ -160,7 +163,8 @@ class HollowSphereSelector(SphereSelector):
         super().__init__(origin, outer_radius)
         self.inner_radius = inner_radius
         if debug:
-            make_debug_sphere(origin, outer_radius, inner_radius= inner_radius)
+            utils.make_debug_sphere(origin, outer_radius, inner_radius= inner_radius)
+
     def filter(self, objectList):
         result =[]
         for o in objectList:            
