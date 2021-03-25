@@ -1,67 +1,40 @@
 import cadquery as cq
 from math import pi, cos, sin, tan, sqrt, degrees, radians, atan2, atan, acos
+from helpers import involute, test_bevel_parameters
+from cutter_objects import make_bevel_tooth_gap_wire, make_rack_tooth_gap, make_crown_gear_tooth_gap
 from OCP.BRepOffsetAPI import BRepOffsetAPI_ThruSections
 
-
-def involute(r, sign = 1):
-    def curve(t):
-        x = r*(cos(t) + t*sin(t))
-        y = r*(sin(t) - t*cos(t))
-        return x,sign*y
-    return curve
-
-def test_bevel_parameters(m, z, b, r_inner, delta, alpha, phi, clearance, r_f_equiv, r_b_equiv):
-    """
-    Handles all wrong sets of parameters with some feedback for the user rather than the usual "BREP API command not done"
-    """
-    if z % 2 != 0:
-        raise ValueError(f"Number of teeths z must be even, try with {z-1} or {z+1}")
-    if r_b_equiv < r_f_equiv:
-        raise ValueError(f"Base radius < root radius leads to undercut gear. Undercut gears are not supported.\nTry with different values of parameters m, z or alpha")
-    h_f = 1.25*m
-    r_f_inner = r_inner - h_f*cos(delta)
-    clearance_max = r_f_inner / sin(phi)
-    if clearance > clearance_max:
-        raise ValueError(f"Too much clearance, for this set of parameters clearance must be <= {round(clearance_max,3)}")
-
-
-
-def make_bevel_tooth_gap_wire(Z_W, m, phi, r_a, r_f, r_base):
-    """
-    Make the tooth gap wire that will be used to cut the base shape
-    """
-    STOP = 2*sqrt((r_a/r_base)**2 - 1) # 2* To be sure to have extra working room
-    #right side
-    right = (cq.Workplane("XY", origin=(0,0,Z_W)).transformed(rotate=(-pi*m,-90+degrees(phi),0))
-            .tag("baseplane")
-            .parametricCurve(involute(r_base), N=8, stop=STOP, makeWire=False))           
-    bot_right = right.moveTo(r_f,0).hLine(r_base-r_f)
-    #left side           
-    left = (cq.Workplane("XY", origin=(0,0,Z_W)).transformed(rotate=(pi*m,-90+degrees(phi),0))
-            .moveTo(r_f,0)
-            .hLine(r_base-r_f)
-            .parametricCurve(involute(r_base, sign=-1), N=8, stop=STOP, makeWire=False))             
-    bot_left = left.moveTo(r_f,0).hLine(r_base-r_f)
-    #Getting points to close the wire
-    pt_top_right = right.vertices(">X").val()
-    pt_bot_right = bot_right.vertices("<X").val()
-    pt_top_left = left.vertices(">X").val()
-    pt_bot_left = bot_left.vertices("<X").val()
-    pt_bot_mid = cq.Workplane("XY", origin=(0,0,Z_W)).transformed(rotate=(0,-90+degrees(phi),0)).pushPoints([(r_f,0)]).val()
-    #TODO : make top an arc instead of a straight line
-    top = cq.Edge.makeLine(cq.Vector(pt_top_right.toTuple()), cq.Vector(pt_top_left.toTuple()))
-    bot = cq.Edge.makeThreePointArc(cq.Vector(pt_bot_left.toTuple()),
-                                    cq.Vector(pt_bot_mid.toTuple()),
-                                    cq.Vector(pt_bot_right.toTuple()))
-    wire = cq.Wire.assembleEdges([bot_right.val(), right.val(), top, left.val(), bot_left.val(), bot])
-    return wire
 
 
 def make_bevel_gear(self, m, z, b, delta, alpha = 20, clearance = None):
     """
-    Make a bevel gear based on the specified parameters
-    """
+    Creates a bevel gear
 
+    Parameters
+    ----------
+    m : float
+        Crown gear modulus
+    z : int
+        Number of teeth       
+    b : float
+        Tooth width
+    delta : float
+        Cone angle in degrees
+    alpha : float
+        Pressure angle in degrees, industry standard is 20°
+    clearance : float
+        Spacing after teeth root to add some material below the teeth
+        Below a (half) bevel gear sketch to understand what is the clearance
+              ____
+             /   / } addendum
+        ____/___/  } dedendum
+        _______/   } clearance (the length of the tilted bar)                
+
+    Returns
+    -------
+    cq.Workplane
+        Returns the bevel gear solid in a cq.Workplane using eachpoint method
+    """
 
     # PARAMETERS
     delta = radians(delta) # cone angle
@@ -74,6 +47,7 @@ def make_bevel_gear(self, m, z, b, delta, alpha = 20, clearance = None):
     r_a_equiv = (r + m*cos(delta))/sin(phi) #top radius of the associated virtual spur gear
     h_f = 1.25*m # dedendum
     h_a = m # addendum
+    # Z positions of outer and inner pitch radius and top of complementary cone
     Z_P = -r/tan(delta) 
     Z_P_inner = - r_inner/tan(delta)
     Z_W =  (Z_P - r/tan(phi))*1.0000001 # This allow for the tooth gap wire to be slightly shifted otherwise leads to failing cut operation
@@ -124,8 +98,34 @@ def make_bevel_gear(self, m, z, b, delta, alpha = 20, clearance = None):
 
 def make_bevel_gear_system(m, z1, z2, b, alpha=20, clearance = None, compound = False):
     """
-    Make a system of bevel gear achieving the required gear ratio defined by:
-    GR = z1/z2
+    Creates a bevel gear system made of two bevel gears
+
+    Parameters
+    ----------
+    m : float
+        Bevel gears modulus (to be able to mesh they need the same modulus)
+    z1 : int
+        Number of teeth of the first bevel gear     
+    z2 : int
+        Number of teeth of the second bevel gear          
+    b : float
+        Tooth width
+    delta : float
+        Cone angle in degrees
+    alpha : float
+        Pressure angle in degrees, industry standard is 20°
+    clearance : float
+        Spacing after teeth root to add some material below the teeth
+        Below a (half) bevel gear sketch to understand what is the clearance
+              ____
+             /   / } addendum
+        ____/___/  } dedendum
+        _______/   } clearance (the length of the tilted bar)                
+
+    Returns
+    -------
+    tuple 
+        Returns a 2-tuple with the two gear solid in a cq.Workplane
     """
     delta_1 = degrees(atan2(z2,z1))
     delta_2 = degrees(atan2(z1,z2))
@@ -136,185 +136,158 @@ def make_bevel_gear_system(m, z1, z2, b, alpha=20, clearance = None, compound = 
     else:
         return gear1, gear2
 
-def involute_gear(m, z, alpha=20, shift=0, N=8):
-    '''
-    See https://khkgears.net/new/gear_knowledge/gear_technical_reference/involute_gear_profile.html
-    for math
-    '''
+def make_gear(self, m, z, b, alpha=20, helix_angle = None, raw = False):
+    """
+    Creates a spur or helical involute gear 
+
+    Parameters
+    ----------
+    m : float
+        Spur gear modulus
+    z : int
+        Number of teeth    
+    b : float
+        Tooth width       
+    alpha : float
+        Pressure angle in degrees, industry standard is 20°
+    helix_angle : float
+        Helix angle of the helical gear in degrees
+        If None creates a spur gear, if specified create a helical gear
+    raw : bool
+        False : Adds filleting a the root teeth edges            
+        True : Left the gear with no filleting          
+
+    Returns
+    -------
+    cq.Workplane  
+        Returns the gear solid in a cq.Workplane using eachpoint method
+    """
     
     alpha = radians(alpha)
 
     # radii
-    r_ref = m*z/2
-    r_top = r_ref + m*(1+shift)
-    r_base = r_ref*cos(alpha)
-    r_d = r_ref - 1.25*m
-    
+    r_p = m*z/2
+    r_a = r_p + m
+    r_base = r_p*cos(alpha)
+    r_f = r_p - 1.25*m
     inv = lambda a: tan(a) - a
     
     # angles of interest
     alpha_inv = inv(alpha)
-    alpha_tip = acos(r_base/r_top)
+    alpha_tip = acos(r_base/r_a)
     alpha_tip_inv = inv(alpha_tip)
     
     a = 90/z+degrees(alpha_inv)
     a2 = 90/z++degrees(alpha_inv)-degrees(alpha_tip_inv)
     a3 = 360/z-a
     
-    # involute curve (radius based parametrization)
-    def involute_curve(r_b,sign=1):
-        
-        def f(r):
-            alpha = sign*acos(r_b/r)
-            x = r*cos(tan(alpha) - alpha) 
-            y = r*sin(tan(alpha) - alpha)
-        
-            return x,y
-        
-        return f
-    
     # construct all the profiles
     right = (
         cq.Workplane()
         .transformed(rotate=(0,0,a))
-        .parametricCurve(involute_curve(r_base,-1), start=r_base, stop = r_top, makeWire=False, N=N)
+        .parametricCurve(involute(r_base,-1), start=r_base, stop = r_a, makeWire=False, N=8)
         .val()
     )
     
     left = (
         cq.Workplane()
         .transformed(rotate=(0,0,-a))
-        .parametricCurve(involute_curve(r_base), start=r_base, stop = r_top, makeWire=False, N=N)
+        .parametricCurve(involute(r_base), start=r_base, stop = r_a, makeWire=False, N=8)
         .val()
     )
 
-    top = cq.Edge.makeCircle(r_top,angle1=-a2, angle2=a2)
-    bottom = cq.Edge.makeCircle(r_d, angle1=-a3, angle2=-a)
+    top = cq.Edge.makeCircle(r_a,angle1=-a2, angle2=a2)
+    bottom = cq.Edge.makeCircle(r_f, angle1=-a3, angle2=-a)
     
-    side = cq.Edge.makeLine( cq.Vector(r_d,0), cq.Vector(r_base,0))
+    side = cq.Edge.makeLine( cq.Vector(r_f,0), cq.Vector(r_base,0))
     side1 = side.rotate(cq.Vector(0, 0, 0), cq.Vector(0, 0, 1), -a)
     side2 = side.rotate(cq.Vector(0, 0, 0), cq.Vector(0, 0, 1), -a3)
     
     # single tooth profile
     profile = cq.Wire.assembleEdges([left,top,right,side1,bottom,side2])
-    profile = profile.chamfer2D(m/4, profile.Vertices()[-3:-1])
+    if not raw:
+        profile = profile.fillet2D(0.25*m, profile.Vertices()[-3:-1])
 
     # complete gear
-    res = (
+    gear = (
         cq.Workplane()
         .polarArray(0,0,360,z)
         .each(lambda loc: profile.located(loc))
         .consolidateWires()
     )
 
-    return res.val()
-
-def make_crown_gear_tooth_gap(self, m, r, b, alpha = 20):
-
-    alpha = radians(alpha)
-    pitch = pi*m
-    P = (pitch/4 , 0)
-    A = (r, P[0] + m*sin(alpha),  m*cos(alpha))
-    B = (r, P[0] - 1.25*m*sin(alpha),  -1.25*m*cos(alpha))
-    C = (r, -P[0] + 1.25*m*sin(alpha),  -1.25*m*cos(alpha))
-    D = (r, -P[0] - m*sin(alpha),  m*cos(alpha))
-
-    edge = cq.Workplane("XZ", origin=(0,0,-1.25*m*cos(alpha))).line(0,2.25*m*cos(alpha))
-    U = edge.val().endPoint()
-    V = edge.val().startPoint()
-    profile = cq.Workplane("XY").polyline([A,B,C,D,A]).wire()
-    faces_to_shell = [cq.Face.makeFromWires(profile.val())]
-    shell_wires = []
-    #top_face
-    shell_wires.append(
-        cq.Wire.assembleEdges([
-            cq.Edge.makeLine(cq.Vector(A),
-                            cq.Vector(D)),
-            cq.Edge.makeLine(cq.Vector(D),
-                            cq.Vector(U)),
-            cq.Edge.makeLine(cq.Vector(U),
-                            cq.Vector(A)),                                                 
-        ]))
-    shell_wires.append(
-        cq.Wire.assembleEdges([
-            cq.Edge.makeLine(cq.Vector(A),
-                            cq.Vector(U)),
-            cq.Edge.makeLine(cq.Vector(U),
-                            cq.Vector(V)),
-            cq.Edge.makeLine(cq.Vector(V),
-                            cq.Vector(B)),                                                 
-            cq.Edge.makeLine(cq.Vector(B),
-                            cq.Vector(A)),                                                 
-        ]))
-    shell_wires.append(
-        cq.Wire.assembleEdges([
-            cq.Edge.makeLine(cq.Vector(B),
-                            cq.Vector(V)),
-            cq.Edge.makeLine(cq.Vector(V),
-                            cq.Vector(C)),
-            cq.Edge.makeLine(cq.Vector(C),
-                            cq.Vector(B)),                                                 
-        ]))
-    shell_wires.append(
-        cq.Wire.assembleEdges([
-            cq.Edge.makeLine(cq.Vector(C),
-                            cq.Vector(V)),
-            cq.Edge.makeLine(cq.Vector(V),
-                            cq.Vector(U)),
-            cq.Edge.makeLine(cq.Vector(U),
-                            cq.Vector(D)),                                                 
-            cq.Edge.makeLine(cq.Vector(D),
-                            cq.Vector(C)),                                                 
-        ]))
-
-    U = edge.val().endPoint()
-    V = edge.val().startPoint()
-
-    for wire in shell_wires:
-        faces_to_shell.append(cq.Workplane("XY").interpPlate(cq.Workplane("XY", obj=wire)).val())
-    shell = cq.Shell.makeShell(faces_to_shell)
-    tooth = cq.Solid.makeSolid(shell)
-    tooth = tooth.translate(cq.Vector(0,0,-m*cos(alpha)))
-
-    return self.eachpoint(lambda loc: tooth.located(loc), True)
-
+    return self.eachpoint(lambda loc: gear.located(loc), True)
 
 def make_crown_gear(self, m, z, b, alpha = 20, clearance = None):
+    """
+    Create a crown gear (which is the same as a rack gear made circular, also called face gear)
+
+    Parameters
+    ----------
+    m : float
+        Crown gear modulus
+    z : int
+        Number of teeth       
+    b : float
+        Tooth width
+    alpha : float
+        Pressure angle in degrees, industry standard is 20°
+    clearance : float
+        The height of the cylinder under the teeth
+        If None, clearance is equal to 1.7*m
+
+    Returns
+    -------
+    cq.Workplane
+        Returns the crown gear solid in a cq.Workplane using eachpoint method
+    """
     r = m*z/2
     if clearance is None:
         clearance = 1.7*m
     base =  cq.Workplane("XY").tag("base").circle(r).extrude(-2.25*m-clearance)
 
-    teeths = cq.Workplane("XY").polarArray(0,0,360,z)._make_crown_gear_tooth_gap(m, r, b, alpha)
+    teeths = cq.Workplane("XY").polarArray(0,0,360,z)._make_crown_gear_tooth_gap(m, r, alpha)
     teeths = cq.Compound.makeCompound(teeths.vals())
     gear = base.cut(teeths)
     gear = gear.cut(cq.Workplane("XY", origin=(0,0,-2.25*m)).circle(r-b).extrude(2.25*m))
 
-    return gear
+    return self.eachpoint(lambda loc: gear.located(loc), True)
 
+def make_rack_gear(self, m, b, length, clearance, alpha = 20, helix_angle = None):
+    """
+    Creates a rack gear 
 
- 
-cq.Workplane._make_crown_gear_tooth_gap = make_crown_gear_tooth_gap
-cq.Workplane.make_crown_gear = make_crown_gear
+    Parameters
+    ----------
+    m : float
+        Crown gear modulus     
+    b : float
+        Tooth width / rack gear width
+    length : float
+        Length of the rack gear
+    alpha : float
+        Pressure angle in degrees, industry standard is 20°
+    helix_angle : float
+        Helix angle in degrees to create a helical rack gear
 
-tooth = cq.Workplane("XY").make_crown_gear(3,20,20)
+    Returns
+    -------
+    cq.Workplane
+        Returns the rack gear solid in a cq.Workplane using eachpoint method
+    """
+    p = pi*m 
+    z = int(length // p)+1
+    height = 2.25*m*cos(alpha) + clearance
+    points = [(p*i,0) for i in range(z)] + [(-p*i,0) for i in range(z)]
+    teeths = cq.Workplane("XY").pushPoints(points).make_rack_tooth_gap(m, b, alpha, helix_angle)
+    base = cq.Workplane("ZY").rect(b, -height, centered=False).extrude(-length)
+    gear = base.cut(teeths)
+    return self.eachpoint(lambda loc: gear.located(loc), True)
 
-show_object(tooth)
+# Adds the functions to cq.Workplane class
 
-
-m = 
-z = 16
-alpha = 20
-delta = 45
-b = 2 # L/4 <= b <= L/3
-# clearance = 2*m
-
-cq.Workplane.make_bevel_gear = make_bevel_gear
-# cq.Workplane.make_bevel_gear_system = make_bevel_gear_system
-test= cq.Workplane("XY").make_bevel_gear(m, z, b, delta, alpha)
-# c = cq.Workplane("XY", origin=(0,0,-16.08)).circle(10.2)#.extrude(-20) #10.69
-
-system = make_bevel_gear_system(3,24,14,2, compound=True)
-# 
-show_object(system)
-# show_object(test)
+cq.Workplane.make_gear = make_gear  
+cq.Workplane.make_bevel_gear = make_bevel_gear  
+cq.Workplane.make_bevel_gear_system = make_bevel_gear_system  
+cq.Workplane.make_rack_gear = make_rack_gear  
+cq.Workplane.make_crown_gear = make_crown_gear  

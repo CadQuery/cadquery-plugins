@@ -2,10 +2,24 @@ import cadquery as cq
 from math import *
 
 
+def make_crown_gear_tooth_gap(self, m, r, alpha = 20):
+    """
+    Create a solid which represents the gap between the teeth of the crown gear
 
+    Parameters
+    ----------
+    m : float
+        Crown gear modulus
+    r : float
+        Crown gear outer radius
+    alpha : float
+        Pressure angle in degrees, industry standard is 20°
 
-
-def make_crown_gear_tooth_gap(self, m, r, b, alpha = 20):
+    Returns
+    -------
+    cq.Workplane
+        Returns the tooth gap solid in a cq.Workplane using eachpoint method
+    """
 
     alpha = radians(alpha)
     pitch = pi*m
@@ -21,7 +35,6 @@ def make_crown_gear_tooth_gap(self, m, r, b, alpha = 20):
     profile = cq.Workplane("XY").polyline([A,B,C,D,A]).wire()
     faces_to_shell = [cq.Face.makeFromWires(profile.val())]
     shell_wires = []
-    #top_face
     shell_wires.append(
         cq.Wire.assembleEdges([
             cq.Edge.makeLine(cq.Vector(A),
@@ -76,17 +89,39 @@ def make_crown_gear_tooth_gap(self, m, r, b, alpha = 20):
 
 
 def make_crown_gear(self, m, z, b, alpha = 20, clearance = None):
+    """
+    Create a crown gear (which is the same as a rack gear made circular, also called face gear)
+
+    Parameters
+    ----------
+    m : float
+        Crown gear modulus
+    z : int
+        Number of teeth       
+    b : float
+        Tooth width
+    alpha : float
+        Pressure angle in degrees, industry standard is 20°
+    clearance : float
+        The height of the cylinder under the teeth
+        If None, clearance is equal to 1.7*m
+
+    Returns
+    -------
+    cq.Workplane
+        Returns the crown gear solid in a cq.Workplane using eachpoint method
+    """
     r = m*z/2
     if clearance is None:
         clearance = 1.7*m
     base =  cq.Workplane("XY").tag("base").circle(r).extrude(-2.25*m-clearance)
 
-    teeths = cq.Workplane("XY").polarArray(0,0,360,z)._make_crown_gear_tooth_gap(m, r, b, alpha)
+    teeths = cq.Workplane("XY").polarArray(0,0,360,z)._make_crown_gear_tooth_gap(m, r, alpha)
     teeths = cq.Compound.makeCompound(teeths.vals())
     gear = base.cut(teeths)
     gear = gear.cut(cq.Workplane("XY", origin=(0,0,-2.25*m)).circle(r-b).extrude(2.25*m))
 
-    return gear
+    return self.eachpoint(lambda loc: gear.located(loc), True)
 
 
  
