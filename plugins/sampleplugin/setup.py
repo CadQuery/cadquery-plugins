@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 
 # Change these variables to set the information for your plugin
 version = "1.0.0"  # Please update this version number when updating the plugin
