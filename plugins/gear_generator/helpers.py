@@ -1,3 +1,4 @@
+from math import *
 def involute(r, sign = 1):
     """
     Defines an involute curve to create the flanks of the involute gears
