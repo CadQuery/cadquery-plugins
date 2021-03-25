@@ -1,7 +1,7 @@
 import cadquery as cq
 from math import pi, cos, sin, tan, sqrt, degrees, radians, atan2, atan, acos
-from helpers import involute, test_bevel_parameters
-from cutter_objects import make_bevel_tooth_gap_wire, make_rack_tooth_gap, make_crown_gear_tooth_gap
+from .helpers import involute, test_bevel_parameters
+from .cutter_objects import make_bevel_tooth_gap_wire, make_rack_tooth_gap, make_crown_gear_tooth_gap
 from OCP.BRepOffsetAPI import BRepOffsetAPI_ThruSections
 
 
