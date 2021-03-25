@@ -1,14 +1,11 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
 
-# Change these variables to set the information for your plugin
 version = '1.0.0' # Please update this version number when updating the plugin
 plugin_name = 'more_selectors'
 description = 'Add more selectors to cadquery '
 long_description = ''
 author = 'Romain FERRU'
 author_email = 'Romain.ferru@gmail.com'
-packages = [] # List of packages that will be installed with this plugin
-py_modules = ["more_selectors", "utils"]
 install_requires = [] # Any dependencies that pip also needs to install to make this plugin work
 
 
@@ -21,8 +18,7 @@ setup(
     author_email=author_email,
     description=description,
     long_description=long_description,
-    packages=packages,
-    py_modules=py_modules,
+    packages=find_packages(where='more_selectors'),
     install_requires=install_requires,
     include_package_data=True,
     zip_safe=False,
