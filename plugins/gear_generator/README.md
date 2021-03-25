@@ -36,8 +36,8 @@ To use this plugin after it has been installed, just import it and use the make_
 ```python
 # Import the Hollow Sphere Selector
 import cadquery as cq
-import gear_generator # link the plugin functions to the cq.Workplane class
-from gear_generator import make_gear
+import gear_generator # automatically links the plugin functions to the cq.Workplane class
+
 
 module = 2
 nb_teeth = 20
