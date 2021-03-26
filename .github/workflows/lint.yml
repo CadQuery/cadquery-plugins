@@ -29,7 +29,16 @@ jobs:
           python-version: 3.8
 
       - name: Install Python dependencies
-        run: pip install black flake8
+        # grab the currently pinned black version from CQ. The `curl | grep`
+        # result will be an empty string if black is not pinned. If black is
+        # not pinned in CQ, final command will reduce to
+        # `pip install black flake8`.
+        run: |
+          black_ver=$(curl "https://raw.githubusercontent.com/CadQuery/cadquery/master/environment.yml" | grep -oP '(?<=black=).*')
+          if [[ ! -z "$black_ver" ]]; then
+              black_ver="==$black_ver";
+          fi
+          pip install black$black_ver flake8
   
       # Runs the lint check against the repo
       - name: Run linters
