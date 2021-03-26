@@ -34,7 +34,9 @@ jobs:
         # not pinned in CQ, final command will reduce to
         # `pip install black flake8`.
         run: |
+          echo "grabbing black version from CQ"
           black_ver=$(curl "https://raw.githubusercontent.com/CadQuery/cadquery/master/environment.yml" | grep -oP '(?<=black=).*')
+          echo "got: $black_ver"
           if [[ ! -z "$black_ver" ]]; then
               black_ver="==$black_ver";
           fi
