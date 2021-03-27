@@ -177,3 +177,6 @@ def _make_crown_gear_tooth_gap(self, m, r, alpha = 20):
 
     return self.eachpoint(lambda loc: tooth.located(loc), True)
 
+cq.Workplane._make_rack_tooth_gap = _make_rack_tooth_gap
+cq.Workplane._make_crown_gear_tooth_gap = _make_crown_gear_tooth_gap
+cq.Workplane._make_bevel_tooth_gap_wire = _make_bevel_tooth_gap_wire
