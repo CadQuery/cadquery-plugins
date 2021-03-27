@@ -4,7 +4,7 @@ This module stores functions that are used by the make_XXX_gear functions but ar
 
 import cadquery as cq
 from math import *
-from .helpers import *
+from .helpers import involute, test_bevel_parameters, rotate_vector_2D
 
 def make_rack_tooth_gap(self, m, b, alpha = 20, helix_angle = None):
     """
