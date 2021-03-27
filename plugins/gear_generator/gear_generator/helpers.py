@@ -1,4 +1,5 @@
-from math import *
+from math import cos, sin, radians
+import cadquery as cq
 def involute(r, sign = 1):
     """
     Defines an involute curve to create the flanks of the involute gears

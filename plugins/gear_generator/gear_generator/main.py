@@ -1,6 +1,6 @@
 import cadquery as cq
 from math import pi, cos, sin, tan, sqrt, degrees, radians, atan2, atan, acos
-from .helpers import involute, test_bevel_parameters
+from .helpers import involute, test_bevel_parameters, rotate_vector_2D
 from .cutter_objects import make_bevel_tooth_gap_wire, make_rack_tooth_gap, make_crown_gear_tooth_gap
 from OCP.BRepOffsetAPI import BRepOffsetAPI_ThruSections
 
@@ -96,7 +96,7 @@ def make_bevel_gear(self, m, z, b, delta, alpha = 20, clearance = None):
     gear = base.cut(final_cutter)
     return self.eachpoint(lambda loc: gear.located(loc), True)
 
-def make_bevel_gear_system(m, z1, z2, b, alpha=20, clearance = None, compound = False):
+def make_bevel_gear_system(self, m, z1, z2, b, alpha=20, clearance = None, compound = True):
     """
     Creates a bevel gear system made of two bevel gears
 
@@ -124,17 +124,19 @@ def make_bevel_gear_system(m, z1, z2, b, alpha=20, clearance = None, compound = 
 
     Returns
     -------
+    cq.Workplane
+        If compound = True, returns a cq.Workplane object with the two gears in a cq.Compound
     tuple 
-        Returns a 2-tuple with the two gear solid in a cq.Workplane if compound = False
-    cq.Compound
-        Returns a cq.Compound object with the two gears if compound = True
+        If compound = False, returns a 2-tuple with the two gear solid in a cq.Workplane
     """
     delta_1 = degrees(atan2(z2,z1))
     delta_2 = degrees(atan2(z1,z2))
-    gear1 = cq.Workplane("XY").make_bevel_gear(m, z, b, delta_1, alpha = alpha, clearance = clearance)                                
-    gear2 = cq.Workplane("YZ").make_bevel_gear(m, z, b, delta_2, alpha = alpha, clearance = clearance)
+    gear1 = cq.Workplane("XY").make_bevel_gear(m, z1, b, delta_1, alpha = alpha, clearance = clearance)                                
+    gear2 = cq.Workplane("YZ").make_bevel_gear(m, z2, b, delta_2, alpha = alpha, clearance = clearance)
+
     if compound:
-        return cq.Compound.makeCompound([gear1.val(), gear2.val()])
+        compound =  cq.Compound.makeCompound([gear1.val(), gear2.val()])
+        return self.eachpoint(lambda loc: compound.located(loc), True)
     else:
         return gear1, gear2
 
