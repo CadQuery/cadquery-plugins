@@ -298,9 +298,9 @@ def make_rack_gear(self, m, b, length, clearance, alpha = 20, helix_angle = None
     return self.eachpoint(lambda loc: gear.val().located(loc), True)
 
 # Adds the functions to cq.Workplane class
-
-cq.Workplane.make_gear = make_gear  
-cq.Workplane.make_bevel_gear = make_bevel_gear  
-cq.Workplane.make_bevel_gear_system = make_bevel_gear_system  
-cq.Workplane.make_rack_gear = make_rack_gear  
-cq.Workplane.make_crown_gear = make_crown_gear  
+def link_methods():
+    cq.Workplane.make_gear = make_gear  
+    cq.Workplane.make_bevel_gear = make_bevel_gear  
+    cq.Workplane.make_bevel_gear_system = make_bevel_gear_system  
+    cq.Workplane.make_rack_gear = make_rack_gear  
+    cq.Workplane.make_crown_gear = make_crown_gear  

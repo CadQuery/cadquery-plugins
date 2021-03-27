@@ -4,5 +4,6 @@ from .main import (
     make_bevel_gear_system,
     make_crown_gear,
     make_rack_gear,
+    link_methods
 )
-from .helpers import *
+link_methods()
