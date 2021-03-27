@@ -41,3 +41,24 @@ def test_bevel_parameters(m, z, b, r_inner, delta, alpha, phi, clearance, r_f_eq
     clearance_max = r_f_inner / sin(phi)
     if clearance > clearance_max:
         raise ValueError(f"Too much clearance, for this set of parameters clearance must be <= {round(clearance_max,3)}")
+
+def rotate_vector_2D(vector, angle):
+    """
+    Rotates a 2D cq.Vector
+
+    Parameters
+    ----------
+    vector : cq.Vector
+        Vector to be rotated
+    angle : float
+        The angle in degrees    
+
+    Returns
+    -------
+    cq.Vector
+        Returns a vector rotated by the specified angle
+    """
+    angle = radians(angle)
+    x = cos(angle)*vector.x - sin(angle)*vector.y
+    y = sin(angle)*vector.x + cos(angle)*vector.y
+    return cq.Vector((x,y))

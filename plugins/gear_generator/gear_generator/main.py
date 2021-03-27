@@ -151,7 +151,7 @@ def make_gear(self, m, z, b, alpha=20, helix_angle = None, raw = False):
     b : float
         Tooth width       
     alpha : float
-        Pressure angle in degrees, industry standard is 20°
+        Pressure angle in degrees, industry standard is 20�
     helix_angle : float
         Helix angle of the helical gear in degrees
         If None creates a spur gear, if specified create a helical gear
@@ -172,6 +172,7 @@ def make_gear(self, m, z, b, alpha=20, helix_angle = None, raw = False):
     r_a = r_p + m
     r_base = r_p*cos(alpha)
     r_f = r_p - 1.25*m
+    p = pi * m 
     inv = lambda a: tan(a) - a
     
     # angles of interest
@@ -180,36 +181,41 @@ def make_gear(self, m, z, b, alpha=20, helix_angle = None, raw = False):
     alpha_tip_inv = inv(alpha_tip)
     
     a = 90/z+degrees(alpha_inv)
-    a2 = 90/z++degrees(alpha_inv)-degrees(alpha_tip_inv)
-    a3 = 360/z-a
-    
+    a2 = 90/z+degrees(alpha_inv)-degrees(alpha_tip_inv)
+    STOP = sqrt((r_a/r_base)**2 - 1) 
     # construct all the profiles
-    right = (
+    left = (
         cq.Workplane()
         .transformed(rotate=(0,0,a))
-        .parametricCurve(involute(r_base,-1), start=r_base, stop = r_a, makeWire=False, N=8)
+        .parametricCurve(involute(r_base,-1), start=0, stop = STOP, makeWire=False, N=8)
         .val()
     )
     
-    left = (
+    right = (
         cq.Workplane()
         .transformed(rotate=(0,0,-a))
-        .parametricCurve(involute(r_base), start=r_base, stop = r_a, makeWire=False, N=8)
+        .parametricCurve(involute(r_base), start=0, stop = STOP, makeWire=False, N=8)
         .val()
     )
 
     top = cq.Edge.makeCircle(r_a,angle1=-a2, angle2=a2)
-    bottom = cq.Edge.makeCircle(r_f, angle1=-a3, angle2=-a)
-    
-    side = cq.Edge.makeLine( cq.Vector(r_f,0), cq.Vector(r_base,0))
-    side1 = side.rotate(cq.Vector(0, 0, 0), cq.Vector(0, 0, 1), -a)
-    side2 = side.rotate(cq.Vector(0, 0, 0), cq.Vector(0, 0, 1), -a3)
-    
+
+    p0 = left.startPoint()
+    p1 = right.startPoint()  
+    side0 = cq.Workplane(origin=p0.toTuple()).hLine(r_f-r_base).val()
+    side1 = cq.Workplane(origin=p1.toTuple()).hLine(r_f-r_base).val()
+    side2 = side0.rotate(cq.Vector(0, 0, 0), cq.Vector(0, 0, 1), -360/z)
+
+    p_bot_left = side1.endPoint()
+    p_bot_right = rotate_vector_2D(side0.endPoint(), -360/z)
+
+    bottom = cq.Workplane().moveTo(p_bot_left.x, p_bot_left.y).radiusArc(p_bot_right,r_f).val()
+
     # single tooth profile
-    profile = cq.Wire.assembleEdges([left,top,right,side1,bottom,side2])
+    profile = cq.Wire.assembleEdges([left,top,right,side1,bottom, side2])
+    # return profile
     if not raw:
         profile = profile.fillet2D(0.25*m, profile.Vertices()[-3:-1])
-
     # complete gear
     gear = (
         cq.Workplane()
@@ -217,8 +223,11 @@ def make_gear(self, m, z, b, alpha=20, helix_angle = None, raw = False):
         .each(lambda loc: profile.located(loc))
         .consolidateWires()
     )
-
-    return self.eachpoint(lambda loc: gear.located(loc), True)
+    if helix_angle is None:
+        gear = gear.extrude(b)
+    else:
+        gear = gear.twistExtrude(b, helix_angle)
+    return self.eachpoint(lambda loc: gear.val().located(loc), True)
 
 def make_crown_gear(self, m, z, b, alpha = 20, clearance = None):
     """
@@ -253,7 +262,7 @@ def make_crown_gear(self, m, z, b, alpha = 20, clearance = None):
     gear = base.cut(teeths)
     gear = gear.cut(cq.Workplane("XY", origin=(0,0,-2.25*m)).circle(r-b).extrude(2.25*m))
 
-    return self.eachpoint(lambda loc: gear.located(loc), True)
+    return self.eachpoint(lambda loc: gear.val().located(loc), True)
 
 def make_rack_gear(self, m, b, length, clearance, alpha = 20, helix_angle = None):
     """
@@ -284,7 +293,7 @@ def make_rack_gear(self, m, b, length, clearance, alpha = 20, helix_angle = None
     teeths = cq.Workplane("XY").pushPoints(points).make_rack_tooth_gap(m, b, alpha, helix_angle)
     base = cq.Workplane("ZY").rect(b, -height, centered=False).extrude(-length)
     gear = base.cut(teeths)
-    return self.eachpoint(lambda loc: gear.located(loc), True)
+    return self.eachpoint(lambda loc: gear.val().located(loc), True)
 
 # Adds the functions to cq.Workplane class
 

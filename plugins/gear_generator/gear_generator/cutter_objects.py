@@ -4,6 +4,7 @@ This module stores functions that are used by the make_XXX_gear functions but ar
 
 import cadquery as cq
 from math import *
+from .helpers import *
 
 def make_rack_tooth_gap(self, m, b, alpha = 20, helix_angle = None):
     """
@@ -88,7 +89,7 @@ def make_bevel_tooth_gap_wire(self, Z_W, m, phi, r_a, r_f, r_base):
                                     cq.Vector(pt_bot_mid.toTuple()),
                                     cq.Vector(pt_bot_right.toTuple()))
     wire = cq.Wire.assembleEdges([bot_right.val(), right.val(), top, left.val(), bot_left.val(), bot])
-    return self.eachpoint(lambda loc: wire.val().located(loc), True)
+    return self.eachpoint(lambda loc: wire.located(loc), True)
 
 def make_crown_gear_tooth_gap(self, m, r, alpha = 20):
     """
