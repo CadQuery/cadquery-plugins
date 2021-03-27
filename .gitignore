@@ -128,3 +128,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 *.ipynb
+plugins/gear_generator/src/gear-generator/
