@@ -39,24 +39,18 @@ class InfiniteCylinderSelector(cq.Selector):
 
     def get_ortho_vector(self, vector):
         #returns a vector orthogonal to the provided vector
-        if 0 not in vector.toTuple():
-            return (1,1, (-vector.x - vector.y)/vector.z)    
-        else:
-            if vector.x != 0:
-                return ((-vector.y - vector.z)/vector.x, 1, 1)
-            elif vector.y != 0:
-                return (1, (-vector.x - vector.z)/vector.y,1)
-            else:
-                return (1,1, (-vector.x - vector.y)/vector.z)
+        other = cq.Vector(0, 1, 0)
+        if vector.normalized() in [other, -other]:
+            other = cq.Vector(1, 0, 0)
+        return vector.cross(other).toTuple()
 
     def filter(self, objectList):
         result =[]
         for o in objectList:            
             p = o.Center()
             projected_p = self.base.toLocalCoords(p)
-            p_radius = sqrt(projected_p.x**2 + projected_p.y**2)
 
-            if p_radius < self.outer_radius:   
+            if projected_p.Length < self.outer_radius:   
                 result.append(o)
                     
 
@@ -80,9 +74,8 @@ class InfHollowCylinderSelector(InfiniteCylinderSelector):
         for o in objectList:            
             p = o.Center()
             projected_p = self.base.toLocalCoords(p)
-            p_radius = sqrt(projected_p.x**2 + projected_p.y**2)
 
-            if p_radius < self.outer_radius and p_radius > self.inner_radius:   
+            if projected_p.Length < self.outer_radius and p_radius > self.inner_radius:   
                 result.append(o)   
         return result
 
@@ -102,9 +95,8 @@ class CylinderSelector(InfiniteCylinderSelector):
         for o in objectList:            
             p = o.Center()
             projected_p = self.base.toLocalCoords(p)
-            p_radius = sqrt(projected_p.x**2 + projected_p.y**2)
 
-            if p_radius < self.outer_radius and (projected_p.z < self.height and projected_p.z > 0):   
+            if projected_p.Length < self.outer_radius and (projected_p.z < self.height and projected_p.z > 0):   
                 result.append(o)   
         return result
 
@@ -124,9 +116,8 @@ class HollowCylinderSelector(InfHollowCylinderSelector):
         for o in objectList:            
             p = o.Center()
             projected_p = self.base.toLocalCoords(p)
-            p_radius = sqrt(projected_p.x**2 + projected_p.y**2)
 
-            if (p_radius < self.outer_radius and p_radius > self.inner_radius) and (projected_p.z < self.height and projected_p.z > 0):   
+            if (projected_p.Length < self.outer_radius and p_radius > self.inner_radius) and (projected_p.z < self.height and projected_p.z > 0):   
                 result.append(o)   
         return result
 
@@ -146,9 +137,8 @@ class SphereSelector(cq.Selector):
         for o in objectList:            
             p = o.Center()
             projected_p = p - self.origin
-            p_radius = sqrt(projected_p.x**2 + projected_p.y**2 + projected_p.z**2)
 
-            if (p_radius < self.outer_radius):
+            if (projected_p.Length < self.outer_radius):
                 result.append(o)   
         return result
 
@@ -170,8 +160,7 @@ class HollowSphereSelector(SphereSelector):
         for o in objectList:            
             p = o.Center()
             projected_p = p - self.origin
-            p_radius = sqrt(projected_p.x**2 + projected_p.y**2 + projected_p.z**2)
 
-            if (p_radius < self.outer_radius and p_radius > self.inner_radius):
+            if (projected_p.Length < self.outer_radius and p_radius > self.inner_radius):
                 result.append(o)   
         return result
