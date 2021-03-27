@@ -176,7 +176,7 @@ def _make_crown_gear_tooth_gap(self, m, r, alpha = 20):
     tooth = tooth.translate(cq.Vector(0,0,-m*cos(alpha)))
 
     return self.eachpoint(lambda loc: tooth.located(loc), True)
-
-cq.Workplane._make_rack_tooth_gap = _make_rack_tooth_gap
-cq.Workplane._make_crown_gear_tooth_gap = _make_crown_gear_tooth_gap
-cq.Workplane._make_bevel_tooth_gap_wire = _make_bevel_tooth_gap_wire
+def register_cutter_objects():
+    cq.Workplane._make_rack_tooth_gap = _make_rack_tooth_gap
+    cq.Workplane._make_crown_gear_tooth_gap = _make_crown_gear_tooth_gap
+    cq.Workplane._make_bevel_tooth_gap_wire = _make_bevel_tooth_gap_wire

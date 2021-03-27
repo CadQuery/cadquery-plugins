@@ -1,10 +1,10 @@
 import cadquery as cq
 from math import pi, cos, sin, tan, sqrt, degrees, radians, atan2, atan, acos
 from .helpers import involute, test_bevel_parameters, rotate_vector_2D
-from .cutter_objects import _make_bevel_tooth_gap_wire, _make_rack_tooth_gap, _make_crown_gear_tooth_gap
+from .cutter_objects import _make_bevel_tooth_gap_wire, _make_rack_tooth_gap, _make_crown_gear_tooth_gap, register_cutter_objects
 from OCP.BRepOffsetAPI import BRepOffsetAPI_ThruSections
 
-
+register_cutter_objects()
 
 def _make_bevel_gear(self, m, z, b, delta, alpha = 20, clearance = None):
     """
