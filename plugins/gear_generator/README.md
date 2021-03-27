@@ -26,7 +26,7 @@ As for now you can create these gears (all the gears are involutes):
 
 <img src="images/bevel_gear.PNG" width="600"/>
 
-* Bevel gear (straight) (very experimental)
+* Bevel gear system (straight) (very experimental)
 
 <img src="images/bevel_gear_system.PNG" width="600"/>
 
