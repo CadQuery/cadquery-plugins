@@ -75,7 +75,7 @@ class InfHollowCylinderSelector(InfiniteCylinderSelector):
             p = o.Center()
             projected_p = self.base.toLocalCoords(p)
 
-            if projected_p.Length < self.outer_radius and p_radius > self.inner_radius:   
+            if projected_p.Length < self.outer_radius and projected_p.Length > self.inner_radius:   
                 result.append(o)   
         return result
 
@@ -117,7 +117,7 @@ class HollowCylinderSelector(InfHollowCylinderSelector):
             p = o.Center()
             projected_p = self.base.toLocalCoords(p)
 
-            if (projected_p.Length < self.outer_radius and p_radius > self.inner_radius) and (projected_p.z < self.height and projected_p.z > 0):   
+            if (projected_p.Length < self.outer_radius and projected_p.Length > self.inner_radius) and (projected_p.z < self.height and projected_p.z > 0):   
                 result.append(o)   
         return result
 
@@ -161,6 +161,6 @@ class HollowSphereSelector(SphereSelector):
             p = o.Center()
             projected_p = p - self.origin
 
-            if (projected_p.Length < self.outer_radius and p_radius > self.inner_radius):
+            if (projected_p.Length < self.outer_radius and projected_p.Length > self.inner_radius):
                 result.append(o)   
         return result
