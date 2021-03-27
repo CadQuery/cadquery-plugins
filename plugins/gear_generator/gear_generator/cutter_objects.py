@@ -7,7 +7,7 @@ from math import *
 from .helpers import involute, test_bevel_parameters, rotate_vector_2D
 
 
-def make_rack_tooth_gap(self, m, b, alpha = 20, helix_angle = None):
+def _make_rack_tooth_gap(self, m, b, alpha = 20, helix_angle = None):
     """
     Creates a solid which represents the gap between the teeth of the rack gear
 
@@ -42,7 +42,7 @@ def make_rack_tooth_gap(self, m, b, alpha = 20, helix_angle = None):
         tooth = tooth_wire.center(tan(helix_angle)*b, 0).workplane(offset=b).polyline([A,B,C,D]).close().loft()
     return self.eachpoint(lambda loc: tooth.val().located(loc), True)
 
-def make_bevel_tooth_gap_wire(self, Z_W, m, phi, r_a, r_f, r_base):
+def _make_bevel_tooth_gap_wire(self, Z_W, m, phi, r_a, r_f, r_base):
     """
     Creates the bevel tooth gap wire that will be lofted to a vertex to make the cutter object
 
@@ -92,7 +92,7 @@ def make_bevel_tooth_gap_wire(self, Z_W, m, phi, r_a, r_f, r_base):
     wire = cq.Wire.assembleEdges([bot_right.val(), right.val(), top, left.val(), bot_left.val(), bot])
     return self.eachpoint(lambda loc: wire.located(loc), True)
 
-def make_crown_gear_tooth_gap(self, m, r, alpha = 20):
+def _make_crown_gear_tooth_gap(self, m, r, alpha = 20):
     """
     Create a solid which represents the gap between the teeth of the crown gear
 
@@ -177,6 +177,3 @@ def make_crown_gear_tooth_gap(self, m, r, alpha = 20):
 
     return self.eachpoint(lambda loc: tooth.located(loc), True)
 
-cq.Workplane.make_rack_tooth_gap = make_rack_tooth_gap
-cq.Workplane.make_crown_gear_tooth_gap = make_crown_gear_tooth_gap
-cq.Workplane.make_bevel_tooth_gap_wire = make_bevel_tooth_gap_wire

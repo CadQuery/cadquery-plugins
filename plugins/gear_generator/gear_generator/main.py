@@ -1,12 +1,12 @@
 import cadquery as cq
 from math import pi, cos, sin, tan, sqrt, degrees, radians, atan2, atan, acos
 from .helpers import involute, test_bevel_parameters, rotate_vector_2D
-from .cutter_objects import make_bevel_tooth_gap_wire, make_rack_tooth_gap, make_crown_gear_tooth_gap
+from .cutter_objects import _make_bevel_tooth_gap_wire, _make_rack_tooth_gap, _make_crown_gear_tooth_gap
 from OCP.BRepOffsetAPI import BRepOffsetAPI_ThruSections
 
 
 
-def make_bevel_gear(self, m, z, b, delta, alpha = 20, clearance = None):
+def _make_bevel_gear(self, m, z, b, delta, alpha = 20, clearance = None):
     """
     Creates a bevel gear
 
@@ -81,7 +81,7 @@ def make_bevel_gear(self, m, z, b, delta, alpha = 20, clearance = None):
     #Making base solid
     base = cq.Solid.revolve(cross_sec,[],360, cq.Vector(0,0,0), cq.Vector(0,0,1))  
 
-    tooth_gap = cq.Workplane("XY").make_bevel_tooth_gap_wire(Z_W, m, phi, r_a_equiv, r_f_equiv, r_base_equiv)
+    tooth_gap = cq.Workplane("XY")._make_bevel_tooth_gap_wire(Z_W, m, phi, r_a_equiv, r_f_equiv, r_base_equiv)
 
     builder = BRepOffsetAPI_ThruSections(True,False) #Builder to create loft to vertex
     builder.AddWire(tooth_gap.val().wrapped)
@@ -96,7 +96,7 @@ def make_bevel_gear(self, m, z, b, delta, alpha = 20, clearance = None):
     gear = base.cut(final_cutter)
     return self.eachpoint(lambda loc: gear.located(loc), True)
 
-def make_bevel_gear_system(self, m, z1, z2, b, alpha=20, clearance = None, compound = True):
+def _make_bevel_gear_system(self, m, z1, z2, b, alpha=20, clearance = None, compound = True):
     """
     Creates a bevel gear system made of two bevel gears
 
@@ -140,7 +140,7 @@ def make_bevel_gear_system(self, m, z1, z2, b, alpha=20, clearance = None, compo
     else:
         return gear1, gear2
 
-def make_gear(self, m, z, b, alpha=20, helix_angle = None, raw = False):
+def _make_gear(self, m, z, b, alpha=20, helix_angle = None, raw = False):
     """
     Creates a spur or helical involute gear 
 
@@ -231,7 +231,7 @@ def make_gear(self, m, z, b, alpha=20, helix_angle = None, raw = False):
         gear = gear.twistExtrude(b, helix_angle)
     return self.eachpoint(lambda loc: gear.val().located(loc), True)
 
-def make_crown_gear(self, m, z, b, alpha = 20, clearance = None):
+def _make_crown_gear(self, m, z, b, alpha = 20, clearance = None):
     """
     Create a crown gear (which is the same as a rack gear made circular, also called face gear)
 
@@ -259,14 +259,14 @@ def make_crown_gear(self, m, z, b, alpha = 20, clearance = None):
         clearance = 1.7*m
     base =  cq.Workplane("XY").tag("base").circle(r).extrude(-2.25*m-clearance)
 
-    teeths = cq.Workplane("XY").polarArray(0,0,360,z).make_crown_gear_tooth_gap(m, r, alpha)
+    teeths = cq.Workplane("XY").polarArray(0,0,360,z)._make_crown_gear_tooth_gap(m, r, alpha)
     teeths = cq.Compound.makeCompound(teeths.vals())
     gear = base.cut(teeths)
     gear = gear.cut(cq.Workplane("XY", origin=(0,0,-2.25*m)).circle(r-b).extrude(2.25*m))
 
     return self.eachpoint(lambda loc: gear.val().located(loc), True)
 
-def make_rack_gear(self, m, b, length, clearance, alpha = 20, helix_angle = None):
+def _make_rack_gear(self, m, b, length, clearance, alpha = 20, helix_angle = None):
     """
     Creates a rack gear 
 
@@ -292,15 +292,15 @@ def make_rack_gear(self, m, b, length, clearance, alpha = 20, helix_angle = None
     z = int(length // p)+1
     height = 2.25*m*cos(alpha) + clearance
     points = [(p*i,0) for i in range(z)] + [(-p*i,0) for i in range(z)]
-    teeths = cq.Workplane("XY").pushPoints(points).make_rack_tooth_gap(m, b, alpha, helix_angle)
+    teeths = cq.Workplane("XY").pushPoints(points)._make_rack_tooth_gap(m, b, alpha, helix_angle)
     base = cq.Workplane("ZY").rect(b, -height, centered=False).extrude(-length)
     gear = base.cut(teeths)
     return self.eachpoint(lambda loc: gear.val().located(loc), True)
 
-# Adds the functions to cq.Workplane class
-def link_methods():
-    cq.Workplane.make_gear = make_gear  
-    cq.Workplane.make_bevel_gear = make_bevel_gear  
-    cq.Workplane.make_bevel_gear_system = make_bevel_gear_system  
-    cq.Workplane.make_rack_gear = make_rack_gear  
-    cq.Workplane.make_crown_gear = make_crown_gear  
+# Adds the functions to cq.Workplane class, it seems to be needed for cq-editor
+def register():
+    cq.Workplane.make_gear = _make_gear  
+    cq.Workplane.make_bevel_gear = _make_bevel_gear  
+    cq.Workplane.make_bevel_gear_system = _make_bevel_gear_system  
+    cq.Workplane.make_rack_gear = _make_rack_gear  
+    cq.Workplane.make_crown_gear = _make_crown_gear  

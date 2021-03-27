@@ -1,9 +1,9 @@
 from .main import (
-    make_gear,
-    make_bevel_gear,
-    make_bevel_gear_system,
-    make_crown_gear,
-    make_rack_gear,
-    link_methods
+    _make_gear,
+    _make_bevel_gear,
+    _make_bevel_gear_system,
+    _make_crown_gear,
+    _make_rack_gear,
+    register
 )
-link_methods()
+register()
