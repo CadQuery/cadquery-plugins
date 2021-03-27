@@ -125,7 +125,9 @@ def make_bevel_gear_system(m, z1, z2, b, alpha=20, clearance = None, compound = 
     Returns
     -------
     tuple 
-        Returns a 2-tuple with the two gear solid in a cq.Workplane
+        Returns a 2-tuple with the two gear solid in a cq.Workplane if compound = False
+    cq.Compound
+        Returns a cq.Compound object with the two gears if compound = True
     """
     delta_1 = degrees(atan2(z2,z1))
     delta_2 = degrees(atan2(z1,z2))
