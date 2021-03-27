@@ -159,7 +159,7 @@ def _make_gear(self, m, z, b, alpha=20, helix_angle = None, raw = False):
         If None creates a spur gear, if specified create a helical gear
     raw : bool
         False : Adds filleting a the root teeth edges            
-        True : Left the gear with no filleting          
+        True : Leave the gear with no filleting          
 
     Returns
     -------

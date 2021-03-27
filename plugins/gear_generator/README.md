@@ -3,16 +3,31 @@
 This plugin provide additionals methods to create various gears. 
 As for now you can create these gears (all the gears are involutes):
 * Spur gear
-<img src="images/spur_gear.PNG" width="600"/>
+
+<img src="images/straight_gear.PNG" width="600"/>
+
 * Helical gear
+
 <img src="images/helical_gear.PNG" width="600"/>
+
 * Rack gear 
-<img src="images/rack_gear.PNG" width="600"/>
+
+<img src="images/rack_gear_straight.PNG" width="600"/>
+
+* Helical rack gear
+
+<img src="images/rack_gear_helix.PNG" width="600"/>
+
 * Crown (or face) gear
+
 <img src="images/crown_gear.PNG" width="600"/>
+
 * Bevel gear (straight) (experimental)
+
 <img src="images/bevel_gear.PNG" width="600"/>
+
 * Bevel gear (straight) (very experimental)
+
 <img src="images/bevel_gear_system.PNG" width="600"/>
 
 
@@ -32,9 +47,7 @@ This plugin has no dependencies other than the cadquery library.
 ## Usage
 
 To use this plugin after it has been installed, just import it and use the make_... methods to create your gears
-
 ```python
-# Import the Hollow Sphere Selector
 import cadquery as cq
 import gear_generator # automatically links the plugin functions to the cq.Workplane class
 
@@ -45,4 +58,10 @@ width = 5
 gear = cq.Workplane("XY").make_gear(module, nb_teeth, width)
 
 ```
-<img src="images/readme_usage_example.PNG" width="600"/>
+Currently in cq-editor the automatical linking doesn't work so you should try to link it manually as below : 
+```python
+import cadquery as cq 
+import gear_generator
+gear_generator.cutter_objects.register_cutter_objects()
+gear_generator.register()
+```
