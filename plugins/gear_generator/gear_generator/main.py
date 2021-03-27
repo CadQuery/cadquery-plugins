@@ -81,10 +81,10 @@ def make_bevel_gear(self, m, z, b, delta, alpha = 20, clearance = None):
     #Making base solid
     base = cq.Solid.revolve(cross_sec,[],360, cq.Vector(0,0,0), cq.Vector(0,0,1))  
 
-    tooth_gap = make_bevel_tooth_gap_wire(Z_W, m, phi, r_a_equiv, r_f_equiv, r_base_equiv)
+    tooth_gap = cq.Workplane("XY").make_bevel_tooth_gap_wire(Z_W, m, phi, r_a_equiv, r_f_equiv, r_base_equiv)
 
     builder = BRepOffsetAPI_ThruSections(True,False) #Builder to create loft to vertex
-    builder.AddWire(tooth_gap.wrapped)
+    builder.AddWire(tooth_gap.val().wrapped)
     builder.AddVertex(cq.Vertex.makeVertex(0,0,0).wrapped)
     cutter = cq.Workplane(obj=cq.Shape.cast(builder.Shape())) #cutter solid
     #Make a compound of cutters
@@ -246,7 +246,7 @@ def make_crown_gear(self, m, z, b, alpha = 20, clearance = None):
         clearance = 1.7*m
     base =  cq.Workplane("XY").tag("base").circle(r).extrude(-2.25*m-clearance)
 
-    teeths = cq.Workplane("XY").polarArray(0,0,360,z)._make_crown_gear_tooth_gap(m, r, alpha)
+    teeths = cq.Workplane("XY").polarArray(0,0,360,z).make_crown_gear_tooth_gap(m, r, alpha)
     teeths = cq.Compound.makeCompound(teeths.vals())
     gear = base.cut(teeths)
     gear = gear.cut(cq.Workplane("XY", origin=(0,0,-2.25*m)).circle(r-b).extrude(2.25*m))

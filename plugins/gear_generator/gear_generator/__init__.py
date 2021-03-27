@@ -1,3 +1,4 @@
+import .main
 from .main import (
     make_gear,
     make_bevel_gear,
