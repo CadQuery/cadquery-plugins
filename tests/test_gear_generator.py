@@ -1,5 +1,5 @@
 import cadquery as cq
-import gear_generator
+import plugins.gear_generator.gear_generator
 from unittest import TestCase
 
 class TestGearGenerator(TestCase):
