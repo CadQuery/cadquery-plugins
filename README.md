@@ -1,5 +1,7 @@
 # cadquery-plugins
 
+![Tests](https://github.com/CadQuery/cadquery-plugins/actions/workflows/tests-actions.yml/badge.svg?branch=main) ![Lint](https://github.com/CadQuery/cadquery-plugins/actions/workflows/lint.yml/badge.svg?branch=main)
+
 cadquery-plugins is a collection of community contributed plugins that extend the functionality of CadQuery. A description of each of the included plugins can be found in the [Plugins](plugins.md) documentation. This documentation only includes plugins that have been accepted into this repository by the core CadQuery development team. Installation of third-party plugins from other sources is also possible, but extra care must be taken by the user to ensure that the plugins are safe to use. A list of third-party plugins that meet a minimum criteria of quality are included in the [Third-Party Plugins](third_party.md) documentation.
 
 ## Installing Plugins
