@@ -1,0 +1,50 @@
+name: lint
+
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # Run lint check on Linux
+  lint-linux:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Check out Git repo
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install Python dependencies
+        # grab the currently pinned black version from CQ. The `curl | grep`
+        # result will be an empty string if black is not pinned. If black is
+        # not pinned in CQ, final command will reduce to
+        # `pip install black flake8`.
+        run: |
+          echo "grabbing black version from CQ"
+          black_ver=$(curl "https://raw.githubusercontent.com/CadQuery/cadquery/master/environment.yml" | grep -oP '(?<=black=).*')
+          echo "got: $black_ver"
+          if [[ -n "$black_ver" ]]; then
+              black_ver="==$black_ver";
+          fi
+          pip install black$black_ver flake8
+  
+      # Runs the lint check against the repo
+      - name: Run linters
+        uses: wearerequired/lint-action@v1
+        with:
+          black: true
+          continue_on_error: false
