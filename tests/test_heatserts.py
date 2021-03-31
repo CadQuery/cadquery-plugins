@@ -12,7 +12,6 @@ def box():
 def test_heatsert_makes_a_hole(box):
 
     box_with_hole = box.faces(">Z").workplane().heatsert("M6")
-    print(type(box_with_hole))
     assert box.faces().size() < box_with_hole.faces().size()
 
 
