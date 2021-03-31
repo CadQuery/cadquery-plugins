@@ -1,4 +1,4 @@
-# Sample Plugin
+# Heatserts
 
 Generates a hole that accepts a heatsert. Heatserts are often used in 3D printed parts. Values included that fit my M3, M4, M5 and M6 heatserts, YMMV.
 
