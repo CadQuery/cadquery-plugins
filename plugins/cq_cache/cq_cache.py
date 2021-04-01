@@ -39,7 +39,14 @@ def build_file_name(fct, *args, **kwargs):
 
     return file_name + ".step"
 
-def cq_cache(cache_size = 100):
+def clear_cq_cache():
+    cache_size = get_cache_dir_size(CACHE_DIR_PATH)
+    for cache_file in os.listdir(CACHE_DIR_PATH):
+        os.remove(os.path.join(CACHE_DIR_PATH, cache_file))
+    print(f"Cache cleared for {round(cache_size*1e-6,3)} MB ")
+
+
+def cq_cache(cache_size = 500):
     """
     Maximum cache memory in MB
     """
@@ -56,7 +63,7 @@ def cq_cache(cache_size = 100):
                 exporters.export(shape, os.path.join(CACHE_DIR_PATH,file_name))
                 
                 cache_dir_size = get_cache_dir_size(CACHE_DIR_PATH)
-                while (cache_dir_size/1024**2) > cache_size:
+                while (cache_dir_size*1e-6) > cache_size:
                     delete_oldest_file(CACHE_DIR_PATH)
                     cache_dir_size = get_cache_dir_size(CACHE_DIR_PATH)
 
@@ -68,9 +75,4 @@ def cq_cache(cache_size = 100):
 
 
 
-def clear_cq_cache():
-    cache_size = get_cache_dir_size(CACHE_DIR_PATH)
-    for cache_file in os.listdir(CACHE_DIR_PATH):
-        os.remove(os.path.join(CACHE_DIR_PATH, cache_file))
-    print(f"Cache cleared for {round(cache_size*1e-6,3)} MB ")
 
