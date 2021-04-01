@@ -1,6 +1,6 @@
-# more_selectors
+# cq_cache
 
-This plugin provide a decorator function that allow you to add file based cache to speed up the execution of your computational heavy cadquery functions.
+This plugin provide a decorator function that allow you to add a file based cache to your functions to allow you to speed up the execution of your computational heavy cadquery functions.
 
 ## Installation
 
