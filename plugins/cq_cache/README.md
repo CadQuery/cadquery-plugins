@@ -24,7 +24,7 @@ To use this plugin after it has been installed, just import it and use the decor
 
 ```python
 #decorate your functions that build computational heavy shapes
-import cq_cache
+from cq_cache import cq_cache, clear_cq_cache
 
 @cq_cache(cache_size=1)
 def make_cube(a,b,c):
