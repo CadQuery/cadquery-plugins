@@ -3,6 +3,7 @@ from cadquery import exporters, importers
 from functools import wraps
 import tempfile
 import os
+import inspect
 
 TEMPDIR_PATH = tempfile.gettempdir()
 CACHE_DIR_NAME = "cadquery_geom_cache"
@@ -37,7 +38,7 @@ def build_file_name(fct, *args, **kwargs):
     for kwarg_value in kwargs.values():
         file_name += SPACER + str(kwarg_value)
 
-    return file_name + ".step"
+    return file_name
 
 def clear_cq_cache():
     cache_size = get_cache_dir_size(CACHE_DIR_PATH)
@@ -45,6 +46,16 @@ def clear_cq_cache():
         os.remove(os.path.join(CACHE_DIR_PATH, cache_file))
     print(f"Cache cleared for {round(cache_size*1e-6,3)} MB ")
 
+def compare_functions(fct, file_name):
+    with open(file_name,"r") as file :
+        cached_function = file.read()
+
+    caching_function = inspect.getsource(fct)
+
+    if cached_function == caching_function:
+        return True 
+    else :
+        return False
 
 def cq_cache(cache_size = 500):
     """
@@ -56,11 +67,23 @@ def cq_cache(cache_size = 500):
         def wrapper(*args, **kwargs):
             file_name = build_file_name(function, *args, **kwargs)
 
-            if file_name in os.listdir(CACHE_DIR_PATH):
-                return importers.importStep(os.path.join(CACHE_DIR_PATH,file_name))
+            if file_name+".txt" in os.listdir(CACHE_DIR_PATH):
+                if compare_functions(function, file_name + ".txt") is True: #check that a change in function passed doesn't load up an old BREP file.
+                    # return importers.importBrep(os.path.join(CACHE_DIR_PATH,file_name)) #Needed to be implemented in CADQUERY
+                    return importers.importStep(os.path.join(CACHE_DIR_PATH,file_name+".step")) #Needed to be implemented in CADQUERY
+                else: 
+                    pass
             else:
                 shape = function(*args, **kwargs)
-                exporters.export(shape, os.path.join(CACHE_DIR_PATH,file_name))
+                try :
+                    shape = shape.val() # if shape is a workplane retrive only the shape object
+                except AttributeError:
+                    pass
+                # shape.exportBrep(os.path.join(CACHE_DIR_PATH,file_name,".brep"))
+                shape.exportStep(os.path.join(CACHE_DIR_PATH,file_name,".step"))
+                with open(os.path.join(CACHE_DIR_PATH,file_name, ".txt")) as fun_file:
+                    fun_file.write(inspect.getsource(function))
+            
                 
                 cache_dir_size = get_cache_dir_size(CACHE_DIR_PATH)
                 while (cache_dir_size*1e-6) > cache_size:
