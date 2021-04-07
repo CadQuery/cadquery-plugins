@@ -59,7 +59,6 @@ class TestSizes:
         chamfered = box.faces("<Z").workplane().heatsert(size, chamfer=chamfer_arg)
         circles = chamfered.edges("%CIRCLE").vals()
         radii = [c.radius() for c in circles]
-        print(radii)
 
         expected_radii = [dims.diam / 2]
 
@@ -69,7 +68,6 @@ class TestSizes:
             chamfer_vals = chamfer_arg
 
         expected_radii.append(dims.diam / 2 + chamfer_vals[0])
-        print(expected_radii)
         for er in expected_radii:
             assert any([abs(er - actual_radius) < 0.001 for actual_radius in radii])
 
