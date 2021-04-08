@@ -41,7 +41,7 @@ result = (
 The user can fine tune the dimensions of the heatsert hole (to suit their brand of heatserts or to add clearance at the bottom of the hole), or add new heatserts. To add a new M8 heatsert (numbers are not accurate):
 ```python
 import cadquery as cq
-import heatserts.heatserts as heatsert_module
+import heatserts as heatsert_module
 
 heatsert_module.heatsert_dims["M8"] = heatsert_module.dims(
     diam=10, depth=15, bolt_diam=8
