@@ -31,8 +31,9 @@ def test_cache_file_creation():
     cube1 = cube(1,1,1)
     cube2 = cube(1,1,1)
     files = os.listdir(CACHE_DIR_PATH)
-    assert len(files) == 1
-    assert files[0] == "cube_1_1_1.step"
+    assert len(files) == 2
+    assert "cube_1_1_1.brep" in files
+    assert "cube_1_1_1.txt" in files
 
 def test_not_exceeding_size():
     clear_cq_cache()
