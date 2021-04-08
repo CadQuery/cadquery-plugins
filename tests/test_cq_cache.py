@@ -1,7 +1,6 @@
 import cadquery as cq
 import cadquery
-# from plugins.cq_cache.cq_cache import cq_cache, clear_cq_cache, get_cache_dir_size
-from cq_cache import cq_cache
+from plugins.cq_cache.cq_cache import cq_cache, clear_cq_cache, get_cache_dir_size
 import tempfile
 import os
 
