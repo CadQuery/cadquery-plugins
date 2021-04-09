@@ -37,3 +37,31 @@ for i in range(200):
 clear_cq_cache()
 #>>> Cache cleared for 1.036 MB
 ```
+
+## Speed gain example 
+```python
+import cadquery as cq 
+import time, functools
+from cq_cache import cq_cache
+from itertools import cycle
+
+@cq_cache()
+def lofting(nb_sec):
+    wires = []
+    radius = cycle([2,5,8,6,10])
+    for i in range(nb_sec):  
+        if i%2==0:
+            Y = 1
+        else:
+            Y = 0     
+        wires.append(cq.Wire.makeCircle(next(radius),cq.Vector(0,0,5*i),cq.Vector(0,Y,1)))
+    loft = cq.Solid.makeLoft(wires)
+    return loft
+
+lofting(500)
+
+# First script run :
+# >>> 4500 ms
+# Second script run :
+# >>> 20 ms
+```
