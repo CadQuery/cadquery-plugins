@@ -35,7 +35,7 @@ for i in range(200):
     make_cube(1,1,1+i)
 
 clear_cq_cache()
-#>>> Cache cleared for 1.036 MB
+# >>> Cache cleared for 1.036 MB
 ```
 
 ## Speed gain example 
