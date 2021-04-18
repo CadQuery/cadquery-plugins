@@ -1,5 +1,5 @@
 import cadquery as cq
-import cadquery 
+import cadquery
 from cadquery import exporters, importers
 from functools import wraps
 import tempfile
@@ -11,21 +11,30 @@ from OCP.BRep import BRep_Builder
 from OCP.TopoDS import TopoDS_Shape
 
 
-
-
-
 TEMPDIR_PATH = tempfile.gettempdir()
 CACHE_DIR_NAME = "cadquery_geom_cache"
-CACHE_DIR_PATH = os.path.join(TEMPDIR_PATH,CACHE_DIR_NAME)
-CQ_TYPES = [cq.Shape, cq.Solid, cq.Shell, cq.Compound, cq.Face, cq.Wire, cq.Edge, cq.Vertex, TopoDS_Shape, cq.Workplane]
+CACHE_DIR_PATH = os.path.join(TEMPDIR_PATH, CACHE_DIR_NAME)
+CQ_TYPES = [
+    cq.Shape,
+    cq.Solid,
+    cq.Shell,
+    cq.Compound,
+    cq.Face,
+    cq.Wire,
+    cq.Edge,
+    cq.Vertex,
+    TopoDS_Shape,
+    cq.Workplane,
+]
 
 if CACHE_DIR_NAME not in os.listdir(TEMPDIR_PATH):
     os.mkdir(CACHE_DIR_PATH)
 
+
 def importBrep(file_path):
     """
     Import a boundary representation model
-    Returns a TopoDS_Shape object 
+    Returns a TopoDS_Shape object
     """
     builder = BRep_Builder()
     shape = TopoDS_Shape()
@@ -46,6 +55,7 @@ def get_cache_dir_size(cache_dir_path):
             total_size += os.path.getsize(fp)
     return total_size
 
+
 def delete_oldest_file(cache_dir_path):
     """
     When the cache directory size exceed the limit, this function is called
@@ -55,7 +65,7 @@ def delete_oldest_file(cache_dir_path):
     os.chdir(cache_dir_path)
     files = sorted(os.listdir(os.getcwd()), key=os.path.getmtime)
     oldest = files[0]
-    os.remove(os.path.join(cache_dir_path,oldest))
+    os.remove(os.path.join(cache_dir_path, oldest))
     os.chdir(cwd)
 
 
@@ -68,14 +78,21 @@ def build_file_name(fct, *args, **kwargs):
     file_name = fct.__name__
     for arg in args:
         if isinstance(arg, cq.Workplane):
-            raise TypeError("Can not cache a function that accepts Workplane objects as argument")
+            raise TypeError(
+                "Can not cache a function that accepts Workplane objects as argument"
+            )
         file_name += SPACER + str(hash(arg))
     for kwarg_value in kwargs.values():
         if isinstance(kwarg_value, cq.Workplane):
-            raise TypeError("Can not cache a function that accepts Workplane objects as argument")
+            raise TypeError(
+                "Can not cache a function that accepts Workplane objects as argument"
+            )
         file_name += SPACER + str(hash(kwarg_value))
     file_name = bytes(file_name, "utf-8")
-    return base64.urlsafe_b64encode(file_name).decode("utf-8") #compacts the long string of hash ints into a urlsafe string
+    return base64.urlsafe_b64encode(file_name).decode(
+        "utf-8"
+    )  # compacts the long string of hash ints into a urlsafe string
+
 
 def clear_cq_cache():
     """
@@ -86,6 +103,7 @@ def clear_cq_cache():
         os.remove(os.path.join(CACHE_DIR_PATH, cache_file))
     print(f"Cache cleared for {round(cache_size*1e-6,3)} MB ")
 
+
 def using_same_function(fct, file_name):
     """
     Checks if this exact function call has been cached.
@@ -93,35 +111,39 @@ def using_same_function(fct, file_name):
     modify the body of the function afterwards.
     It assure that if the function has been modify, the cache won't load a wrong cached file
     """
-    with open(file_name,"r") as f :
+    with open(file_name, "r") as f:
         cached_function = "".join(f.readlines()[:-1])
 
     caching_function = inspect.getsource(fct)
     if cached_function == caching_function:
-        return True 
-    else :
+        return True
+    else:
         return False
 
-def return_right_wrapper(source, target_file):    
+
+def return_right_wrapper(source, target_file):
     """
     Cast the TopoDS_Shape object loaded by importBrep as the right type that the original function is returning
     """
 
     with open(target_file, "r") as tf:
         target = tf.readlines()[-1]
-        target = target.replace("class ","").lstrip("<'").rstrip("'>") #eval cannot evaluate this "<class 'cadquery.cq.Workplane'>"" but this "cadquery.cq.Workplane" is ok
-        target = eval(target) #by the checking above forbids malicious excecution
-    
+        target = (
+            target.replace("class ", "").lstrip("<'").rstrip("'>")
+        )  # eval cannot evaluate this "<class 'cadquery.cq.Workplane'>"" but this "cadquery.cq.Workplane" is ok
+        target = eval(target)  # by the checking above forbids malicious excecution
+
     for cq_type in CQ_TYPES:
         if target == cq_type:
             if cq_type == cq.Workplane:
                 shape = cq.Shape(source)
                 shape = cq.Workplane(obj=shape)
             else:
-                shape = cq_type(source)    
-            return shape 
-        
-def cq_cache(cache_size = 500):
+                shape = cq_type(source)
+            return shape
+
+
+def cq_cache(cache_size=500):
     """
     cache_size : Maximum cache memory in MB
 
@@ -133,44 +155,48 @@ def cq_cache(cache_size = 500):
     a similar value for different object will fail but might not raise an error, keep that in mind.
 
     """
-    def _cq_cache(function):     
 
-        @wraps(function) 
+    def _cq_cache(function):
+        @wraps(function)
         def wrapper(*args, **kwargs):
             file_name = build_file_name(function, *args, **kwargs)
             file_path = os.path.join(CACHE_DIR_PATH, file_name)
 
-            if file_name in os.listdir(CACHE_DIR_PATH) and using_same_function(function, file_path) : #check that a change in function passed doesn't load up an old BREP file.
-                shape = importBrep(os.path.join(CACHE_DIR_PATH,file_name+".brep")) #If implemented in cadquery, could switch to the cadquery version of importBrep 
-                return return_right_wrapper(shape,file_path)              
-     
+            if file_name in os.listdir(CACHE_DIR_PATH) and using_same_function(
+                function, file_path
+            ):  # check that a change in function passed doesn't load up an old BREP file.
+                shape = importBrep(
+                    os.path.join(CACHE_DIR_PATH, file_name + ".brep")
+                )  # If implemented in cadquery, could switch to the cadquery version of importBrep
+                return return_right_wrapper(shape, file_path)
 
             else:
                 shape = function(*args, **kwargs)
                 shape_type = type(shape)
                 if shape_type not in CQ_TYPES:
                     raise TypeError(f"cq_cache cannot wrap {shape_type} objects")
-                try :
-                    shape_export = shape.val() # if shape is a workplane retrive only the shape object
+                try:
+                    shape_export = (
+                        shape.val()
+                    )  # if shape is a workplane retrive only the shape object
                 except AttributeError:
                     shape_export = shape
-                    
-                shape_export.exportBrep(os.path.join(CACHE_DIR_PATH,file_name)+".brep")
 
-                with open(os.path.join(CACHE_DIR_PATH,file_name), "w") as fun_file:
+                shape_export.exportBrep(
+                    os.path.join(CACHE_DIR_PATH, file_name) + ".brep"
+                )
+
+                with open(os.path.join(CACHE_DIR_PATH, file_name), "w") as fun_file:
                     fun_file.write(inspect.getsource(function))
                     fun_file.write(str(shape_type))
-                
+
                 cache_dir_size = get_cache_dir_size(CACHE_DIR_PATH)
-                while (cache_dir_size*1e-6) > cache_size:
+                while (cache_dir_size * 1e-6) > cache_size:
                     delete_oldest_file(CACHE_DIR_PATH)
                     cache_dir_size = get_cache_dir_size(CACHE_DIR_PATH)
 
                 return shape
 
         return wrapper
- 
+
     return _cq_cache
-
-
-
