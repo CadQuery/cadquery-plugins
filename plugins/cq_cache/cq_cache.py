@@ -67,8 +67,12 @@ def build_file_name(fct, *args, **kwargs):
     SPACER = "_"
     file_name = fct.__name__
     for arg in args:
+        if isinstance(arg, cq.Workplane):
+            raise TypeError("Can not cache a function that accepts Workplane objects as argument")
         file_name += SPACER + str(arg)
     for kwarg_value in kwargs.values():
+        if isinstance(kwarg_value, cq.Workplane):
+            raise TypeError("Can not cache a function that accepts Workplane objects as argument")
         file_name += SPACER + str(kwarg_value)
 
     return file_name
@@ -120,7 +124,15 @@ def return_right_wrapper(source, target_file):
         
 def cq_cache(cache_size = 500):
     """
-    Maximum cache memory in MB
+    cache_size : Maximum cache memory in MB
+
+    This function save the model created by the cached function as a BREP file and
+    loads it if the cached function is called several time with the same arguments.
+
+    Note that it is primarly made for caching function with simple types as argument.
+    Classes passed as argument without __hash__ function or with __hash__ function that returns
+    a similar value for different object will fail but might not raise an error, keep that in mind.
+
     """
     def _cq_cache(function):     
 
