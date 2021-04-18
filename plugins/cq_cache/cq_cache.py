@@ -23,6 +23,10 @@ if CACHE_DIR_NAME not in os.listdir(TEMPDIR_PATH):
     os.mkdir(CACHE_DIR_PATH)
 
 def importBrep(file_path):
+    """
+    Import a boundary representation model
+    Returns a TopoDS_Shape object 
+    """
     builder = BRep_Builder()
     shape = TopoDS_Shape()
     return_code = BRepTools.Read_s(shape, file_path, builder)
@@ -32,6 +36,9 @@ def importBrep(file_path):
 
 
 def get_cache_dir_size(cache_dir_path):
+    """
+    Returns size of the specified directory in bytes
+    """
     total_size = 0
     for dirpath, dirnames, filenames in os.walk(cache_dir_path):
         for f in filenames:
@@ -40,6 +47,10 @@ def get_cache_dir_size(cache_dir_path):
     return total_size
 
 def delete_oldest_file(cache_dir_path):
+    """
+    When the cache directory size exceed the limit, this function is called
+    deleting the oldest file of the cache
+    """
     cwd = os.getcwd()
     os.chdir(cache_dir_path)
     files = sorted(os.listdir(os.getcwd()), key=os.path.getmtime)
@@ -49,6 +60,10 @@ def delete_oldest_file(cache_dir_path):
 
 
 def build_file_name(fct, *args, **kwargs):
+    """
+    Returns a file name given the specified function and args.
+    If the function and the args are the same this function returns the same filename
+    """
     SPACER = "_"
     file_name = fct.__name__
     for arg in args:
@@ -59,12 +74,21 @@ def build_file_name(fct, *args, **kwargs):
     return file_name
 
 def clear_cq_cache():
+    """
+    Removes all the files from the cq cache
+    """
     cache_size = get_cache_dir_size(CACHE_DIR_PATH)
     for cache_file in os.listdir(CACHE_DIR_PATH):
         os.remove(os.path.join(CACHE_DIR_PATH, cache_file))
     print(f"Cache cleared for {round(cache_size*1e-6,3)} MB ")
 
 def using_same_function(fct, file_name):
+    """
+    Checks if this exact function call has been cached.
+    Take care of the eventuality where the user cache a function but
+    modify the body of the function afterwards.
+    It assure that if the function has been modify, the cache won't load a wrong cached file
+    """
     with open(file_name,"r") as f :
         cached_function = "".join(f.readlines()[:-1])
 
@@ -75,6 +99,9 @@ def using_same_function(fct, file_name):
         return False
 
 def return_right_wrapper(source, target_file):    
+    """
+    Cast the TopoDS_Shape object loaded by importBrep as the right type that the original function is returning
+    """
     CQ_TYPES_STR = [str(cq_type) for cq_type in CQ_TYPES]
 
     with open(target_file, "r") as tf:
