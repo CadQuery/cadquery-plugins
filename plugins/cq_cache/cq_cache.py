@@ -69,13 +69,13 @@ def build_file_name(fct, *args, **kwargs):
     for arg in args:
         if isinstance(arg, cq.Workplane):
             raise TypeError("Can not cache a function that accepts Workplane objects as argument")
-        file_name += SPACER + hash(arg)
+        file_name += SPACER + str(hash(arg))
     for kwarg_value in kwargs.values():
         if isinstance(kwarg_value, cq.Workplane):
             raise TypeError("Can not cache a function that accepts Workplane objects as argument")
-        file_name += SPACER + hash(kwarg_value)
+        file_name += SPACER + str(hash(kwarg_value))
     file_name = bytes(file_name, "utf-8")
-    return base64.urlsafe_b64encode(file_name)
+    return base64.urlsafe_b64encode(file_name).decode("utf-8") #compacts the long string of hash ints into a urlsafe string
 
 def clear_cq_cache():
     """
@@ -106,7 +106,6 @@ def return_right_wrapper(source, target_file):
     """
     Cast the TopoDS_Shape object loaded by importBrep as the right type that the original function is returning
     """
-    CQ_TYPES_STR = [str(cq_type) for cq_type in CQ_TYPES]
 
     with open(target_file, "r") as tf:
         target = tf.readlines()[-1]
@@ -139,11 +138,11 @@ def cq_cache(cache_size = 500):
         @wraps(function) 
         def wrapper(*args, **kwargs):
             file_name = build_file_name(function, *args, **kwargs)
-            txt_file_path = os.path.join(CACHE_DIR_PATH, file_name+".txt")
+            file_path = os.path.join(CACHE_DIR_PATH, file_name)
 
-            if file_name+".txt" in os.listdir(CACHE_DIR_PATH) and using_same_function(function, txt_file_path) : #check that a change in function passed doesn't load up an old BREP file.
+            if file_name in os.listdir(CACHE_DIR_PATH) and using_same_function(function, file_path) : #check that a change in function passed doesn't load up an old BREP file.
                 shape = importBrep(os.path.join(CACHE_DIR_PATH,file_name+".brep")) #If implemented in cadquery, could switch to the cadquery version of importBrep 
-                return return_right_wrapper(shape,txt_file_path)              
+                return return_right_wrapper(shape,file_path)              
      
 
             else:
@@ -158,7 +157,7 @@ def cq_cache(cache_size = 500):
                     
                 shape_export.exportBrep(os.path.join(CACHE_DIR_PATH,file_name)+".brep")
 
-                with open(os.path.join(CACHE_DIR_PATH,file_name)+ ".txt", "w") as fun_file:
+                with open(os.path.join(CACHE_DIR_PATH,file_name), "w") as fun_file:
                     fun_file.write(inspect.getsource(function))
                     fun_file.write(str(shape_type))
                 

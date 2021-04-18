@@ -8,6 +8,8 @@ TEMPDIR_PATH = tempfile.gettempdir()
 CACHE_DIR_NAME = "cadquery_geom_cache"
 CACHE_DIR_PATH = os.path.join(TEMPDIR_PATH,CACHE_DIR_NAME)
 CACHE_SIZE = 0.1
+for f in os.listdir(CACHE_DIR_PATH):
+    os.remove(os.path.join(CACHE_DIR_PATH,f))
 
 @cq_cache(CACHE_SIZE)
 def cube(a,b,c):
@@ -32,8 +34,8 @@ def test_cache_file_creation():
     cube2 = cube(1,1,1)
     files = os.listdir(CACHE_DIR_PATH)
     assert len(files) == 2
-    assert "cube_1_1_1.brep" in files
-    assert "cube_1_1_1.txt" in files
+    assert "Y3ViZV8xXzFfMQ==.brep" in files
+    assert "Y3ViZV8xXzFfMQ==" in files
 
 def test_not_exceeding_size():
     clear_cq_cache()
