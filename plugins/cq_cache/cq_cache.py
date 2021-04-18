@@ -5,7 +5,7 @@ from functools import wraps
 import tempfile
 import os
 import inspect
-
+import base64
 from OCP.BRepTools import BRepTools
 from OCP.BRep import BRep_Builder
 from OCP.TopoDS import TopoDS_Shape
@@ -69,13 +69,13 @@ def build_file_name(fct, *args, **kwargs):
     for arg in args:
         if isinstance(arg, cq.Workplane):
             raise TypeError("Can not cache a function that accepts Workplane objects as argument")
-        file_name += SPACER + str(arg)
+        file_name += SPACER + hash(arg)
     for kwarg_value in kwargs.values():
         if isinstance(kwarg_value, cq.Workplane):
             raise TypeError("Can not cache a function that accepts Workplane objects as argument")
-        file_name += SPACER + str(kwarg_value)
-
-    return file_name
+        file_name += SPACER + hash(kwarg_value)
+    file_name = bytes(file_name, "utf-8")
+    return base64.urlsafe_b64encode(file_name)
 
 def clear_cq_cache():
     """
