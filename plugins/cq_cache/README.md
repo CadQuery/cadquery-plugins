@@ -1,6 +1,6 @@
 # cq_cache
 
-This plugin provide a decorator function that allow you to add a file based cache to your functions to allow you to speed up the execution of your computational heavy cadquery functions.
+This plugin provides a decorator function that allows you to add a file based cache to your functions to allow you to speed up the execution of your computationally heavy cadquery functions.
 
 ## Installation
 
@@ -23,7 +23,7 @@ This plugin has no dependencies other than the cadquery library.
 To use this plugin after it has been installed, just import it and use the decorator on your functions
 
 ```python
-#decorate your functions that build computational heavy shapes
+# decorate your functions that build computationally heavy shapes
 from cq_cache import cq_cache, clear_cq_cache
 
 @cq_cache(cache_size=1)
@@ -35,7 +35,7 @@ for i in range(200):
     make_cube(1,1,1+i)
 
 clear_cq_cache()
-#>>> Cache cleared for 1.036 MB
+# >>> Cache cleared for 1.036 MB
 ```
 
 ## Speed gain example 
