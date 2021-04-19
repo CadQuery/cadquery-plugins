@@ -127,20 +127,17 @@ def return_right_wrapper(source, target_file):
     """
 
     with open(target_file, "r") as tf:
-        target = tf.readlines()[-1]
-        target = (
-            target.replace("class ", "").lstrip("<'").rstrip("'>")
-        )  # eval cannot evaluate this "<class 'cadquery.cq.Workplane'>"" but this "cadquery.cq.Workplane" is ok
-        target = eval(target)  # by the checking above forbids malicious excecution
+        stored = tf.readlines()[-1]
 
-    for cq_type in CQ_TYPES:
-        if target == cq_type:
-            if cq_type == cq.Workplane:
-                shape = cq.Shape(source)
-                shape = cq.Workplane(obj=shape)
-            else:
-                shape = cq_type(source)
-            return shape
+    target = next(x for x in CQ_TYPES if x.__name__ == stored)
+
+    if target == cq.Workplane:
+        shape = cq.Shape(source)
+        shape = cq.Workplane(obj=shape)
+    else:
+        shape = target(source)
+
+    return shape
 
 
 def cq_cache(cache_size=500):
@@ -188,7 +185,7 @@ def cq_cache(cache_size=500):
 
                 with open(os.path.join(CACHE_DIR_PATH, file_name), "w") as fun_file:
                     fun_file.write(inspect.getsource(function))
-                    fun_file.write(str(shape_type))
+                    fun_file.write(shape_type.__name__)
 
                 cache_dir_size = get_cache_dir_size(CACHE_DIR_PATH)
                 while (cache_dir_size * 1e-6) > cache_size:
