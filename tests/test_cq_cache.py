@@ -68,3 +68,13 @@ def test_cache_type_return_with_modified_function():
     cube2 = cube(1, 1, 1)
     assert isinstance(cube1, cq.Workplane)
     assert isinstance(cube2, cq.Workplane)
+
+    @cq_cache(CACHE_SIZE)
+    def cube(a, b, c):
+        cube = cq.Workplane().box(a, b, c).val()
+        return cube
+
+    cube3 = cube(1, 1, 1)
+    cube4 = cube(1, 1, 1)
+    assert isinstance(cube3, cq.Solid)
+    assert isinstance(cube4, cq.Solid)
