@@ -7,7 +7,7 @@ long_description = "This plugin "+\
     "simplifies using each(..) on faces. To use each "+\
     "you have to select workplane coordinate system for each"+\
     "face before building your geometry. "+\
-    "apply_to_each_face() function provided by this plugin "+\
+    "applyToEachFace() function provided by this plugin "+\
     "separates tasks of choosing face coordinate system and "+\
     "actually building new geometry and provides a few built in "+\
     "ways of choosing coordinate system that are good enough in "+\

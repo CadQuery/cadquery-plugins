@@ -4,7 +4,7 @@ This plugin simplifies using
 `Workplane.each(..)` on faces. 
 To use each you have to select workplane coordinate 
 system for each face before building your geometry. 
-`Workplane.apply_to_each_face()` function provided by 
+`Workplane.applyToEachFace()` function provided by 
 this plugin separates tasks of choosing face coordinate 
 system and actually building new geometry and provides 
 a few built in ways of choosing coordinate system that 
@@ -28,8 +28,8 @@ This plugin has no dependencies other than the cadquery library.
 ## Usage
 
 To use this plugin after it has been installed, 
-just import it and use `apply_to_each_face(..)` function. 
-`apply_to_each_face` has two arguments
+just import it and use `applyToEachFace(..)` function. 
+`applyToEachFace` has two arguments
 both of which are callbacks
 
 1. `f_workplane_selector(face)` callback accepts a face and returns 
@@ -76,7 +76,7 @@ arbitrary faces. In some cases this requirement can be relaxed.
 ## Example 1
 ```python
 import cadquery as cq
-from apply_to_each_face import \
+from applyToEachFace import \
     XAxisInPlane,\
     WORLD_AXIS_PLANES_XY_ZX_YZ
 
@@ -92,7 +92,7 @@ result =\
     main_body().union(    
         main_body()\
         .faces()\
-        .apply_to_each_face(
+        .applyToEachFace(
             XAxisInPlane(WORLD_AXIS_PLANES_XY_ZX_YZ),
             lambda wp, face:\
                 wp.circle(4).extrude(1)))
@@ -103,7 +103,7 @@ result =\
 ## Example 2
 ```python
 import cadquery as cq
-from apply_to_each_face import \
+from applyToEachFace import \
     XAxisInPlane,\
     WORLD_AXIS_PLANES_XY_ZX_YZ
 
@@ -116,7 +116,7 @@ result =\
     main_body().union(    
         main_body()\
         .faces("#Z")\
-        .apply_to_each_face(
+        .applyToEachFace(
             XAxisInPlane(WORLD_AXIS_PLANES_XY_YZ_ZX),
             lambda wp, face:\
                 wp.rect(1,2).extrude(3)))
@@ -127,7 +127,7 @@ result =\
 
 ```python
 import cadquery as cq
-from apply_to_each_face import \
+from applyToEachFace import \
     XAxisInPlane,\
     WORLD_AXIS_PLANES_XY_ZX_YZ
 
@@ -140,7 +140,7 @@ result =\
     main_body().faces("<Z").shell(-0.5).cut(    
         main_body()\
         .faces("not <Z")\
-        .apply_to_each_face(
+        .applyToEachFace(
             XAxisInPlane(WORLD_AXIS_PLANES_XY_ZX_YZ),
             lambda wp, face:\
                 wp.add(face)\
@@ -155,7 +155,7 @@ result =\
 
 ```python
 import cadquery as cq
-from apply_to_each_face import \
+from applyToEachFace import \
     XAxisInPlane,\
     WORLD_AXIS_PLANES_XY_ZX_YZ,\
     XAxisClosestTo,\
@@ -170,7 +170,7 @@ result_x_axis_in_plane =\
     main_body().union(
         main_body()\
         .faces("#Z")\
-        .apply_to_each_face(
+        .applyToEachFace(
             XAxisInPlane(WORLD_AXIS_PLANES_XY_ZX_YZ),
             lambda wp, face:\
                 wp.rect(2,1).extrude(2))) 
@@ -179,7 +179,7 @@ result_x_axis_closest_to =\
     main_body().union(
         main_body()\
         .faces("#Z")\
-        .apply_to_each_face(
+        .applyToEachFace(
             XAxisClosestTo(WORLD_AXIS_UNIT_VECTORS_XYZ),
             lambda wp, face:\
                 wp.rect(2,1).extrude(2)))\
@@ -200,7 +200,7 @@ result =\
     main_body().union(
         main_body()\
         .faces()\
-        .apply_to_each_face(
+        .applyToEachFace(
             XAxisClosestTo(WORLD_AXIS_UNIT_VECTORS_ZXY),
             lambda wp, face:\
                 wp.add(face)\

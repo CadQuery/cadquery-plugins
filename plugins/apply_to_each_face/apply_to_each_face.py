@@ -1,6 +1,6 @@
 import cadquery as cq
 
-def apply_to_each_face(wp, f_workplane_selector, f_draw):
+def applyToEachFace(wp, f_workplane_selector, f_draw):
     def each_callback(face):
         wp_face = f_workplane_selector(face)
         
@@ -165,4 +165,4 @@ class XAxisClosestTo:
                 v_zaxis)
 
 
-cq.Workplane.apply_to_each_face = apply_to_each_face
+cq.Workplane.applyToEachFace = applyToEachFace
