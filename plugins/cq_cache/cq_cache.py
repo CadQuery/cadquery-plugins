@@ -83,7 +83,7 @@ def build_file_name(fct, *args, **kwargs):
 
     # hash all relevant variables
     hasher = hashlib.md5()
-    for val in [fct.__name__, args.__repr__(), kwargs.__repr__()]:
+    for val in [fct.__name__, repr(args), repr(kwargs)]:
         hasher.update(bytes(val, "utf-8"))
     # encode the hash as a filesystem safe string
     filename = base64.urlsafe_b64encode(hasher.digest()).decode("utf-8")
@@ -145,9 +145,9 @@ def cq_cache(cache_size=500):
     loads it if the cached function is called several time with the same arguments.
 
     Note that it is primarly made for caching function with simple types as argument.
-    Classes passed as argument without __hash__ function or with __hash__ function that returns
-    a similar value for different object will fail but might not raise an error, keep that in mind.
-
+    Classes passed as an argument  with __repr__ function that returns a similar value
+    for different object or a different value for identical objects will fail but might
+    not raise an error, keep that in mind.
     """
 
     def _cq_cache(function):
