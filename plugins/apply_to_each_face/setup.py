@@ -1,17 +1,19 @@
 from setuptools import setup, find_packages
 
-version = "1.0.0" 
+version = "1.0.0"
 plugin_name = "apply_to_each_face"  # The name of your plugin
 description = "Building the same geometry on each selected face"
-long_description = "This plugin "+\
-    "simplifies using each(..) on faces. To use each "+\
-    "you have to select workplane coordinate system for each"+\
-    "face before building your geometry. "+\
-    "applyToEachFace() function provided by this plugin "+\
-    "separates tasks of choosing face coordinate system and "+\
-    "actually building new geometry and provides a few built in "+\
-    "ways of choosing coordinate system that are good enough in "+\
-    "many cases."
+long_description = (
+    "This plugin "
+    + "simplifies using each(..) on faces. To use each "
+    + "you have to select workplane coordinate system for each"
+    + "face before building your geometry. "
+    + "applyToEachFace() function provided by this plugin "
+    + "separates tasks of choosing face coordinate system and "
+    + "actually building new geometry and provides a few built in "
+    + "ways of choosing coordinate system that are good enough in "
+    + "many cases."
+)
 author = "Fedor Kotov"
 author_email = "fedorkotov@gmail.com"
 packages = []  # List of packages that will be installed with this plugin
