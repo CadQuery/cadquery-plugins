@@ -145,9 +145,10 @@ def cq_cache(cache_size=500):
     loads it if the cached function is called several time with the same arguments.
 
     Note that it is primarly made for caching function with simple types as argument.
-    Classes passed as an argument  with __repr__ function that returns a similar value
-    for different object or a different value for identical objects will fail but might
-    not raise an error, keep that in mind.
+    Objects passed as an argument with a __repr__ function that returns the same value
+    for different object will fail without raising an error. If the __repr__ function
+    returns different values for equivalent objects (which is the default behaviour of
+    user defined classes) then the caching will be ineffective.
     """
 
     def _cq_cache(function):

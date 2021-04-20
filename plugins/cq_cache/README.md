@@ -68,4 +68,4 @@ lofting(500)
 
 ## Limitations
 
-Cache results are stored under a unique value generated from the function name and arguments. Arguments are differentiated using `repr(arg)`, so if your argument has a string representation involving the address (like `<class MyClass at 0x7fa34d805940>`) then caching will ineffective. In particular, using a CadQuery Workplane as an argument will raise a TypeError (a Workplane as a return type from your decorated function is fine).
+Cache results are stored under a unique value generated from the function name and arguments. Arguments are compared using `repr(arg)`, so if your argument has a string representation involving the address (like `<class MyClass at 0x7fa34d805940>`) then caching will ineffective. In particular, using a CadQuery Workplane as an argument will raise a TypeError (a Workplane as a return type from your decorated function is fine).
