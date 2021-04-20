@@ -9,6 +9,8 @@ import base64
 from OCP.BRepTools import BRepTools
 from OCP.BRep import BRep_Builder
 from OCP.TopoDS import TopoDS_Shape
+from itertools import chain
+import hashlib
 
 
 TEMPDIR_PATH = tempfile.gettempdir()
@@ -74,24 +76,19 @@ def build_file_name(fct, *args, **kwargs):
     Returns a file name given the specified function and args.
     If the function and the args are the same this function returns the same filename
     """
-    SPACER = "_"
-    file_name = fct.__name__
-    for arg in args:
-        if isinstance(arg, cq.Workplane):
-            raise TypeError(
-                "Can not cache a function that accepts Workplane objects as argument"
-            )
-        file_name += SPACER + str(hash(arg))
-    for kwarg_value in kwargs.values():
-        if isinstance(kwarg_value, cq.Workplane):
-            raise TypeError(
-                "Can not cache a function that accepts Workplane objects as argument"
-            )
-        file_name += SPACER + str(hash(kwarg_value))
-    file_name = bytes(file_name, "utf-8")
-    return base64.urlsafe_b64encode(file_name).decode(
-        "utf-8"
-    )  # compacts the long string of hash ints into a urlsafe string
+    if cq.Workplane in (type(x) for x in chain(args, kwargs.values())):
+        raise TypeError(
+            "Can not cache a function that accepts Workplane objects as argument"
+        )
+
+    # hash all relevant variables
+    hasher = hashlib.md5()
+    for val in [fct.__name__, args.__repr__(), kwargs.__repr__()]:
+        hasher.update(bytes(val, "utf-8"))
+    # encode the hash as a filesystem safe string
+    filename = base64.urlsafe_b64encode(hasher.digest()).decode("utf-8")
+    # strip the padding
+    return filename.rstrip("=")
 
 
 def clear_cq_cache():

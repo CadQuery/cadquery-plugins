@@ -3,6 +3,7 @@ import cadquery
 from plugins.cq_cache.cq_cache import cq_cache, clear_cq_cache, get_cache_dir_size
 import tempfile
 import os
+import pytest
 
 TEMPDIR_PATH = tempfile.gettempdir()
 CACHE_DIR_NAME = "cadquery_geom_cache"
@@ -38,8 +39,17 @@ def test_cache_file_creation():
     cube2 = cube(1, 1, 1)
     files = os.listdir(CACHE_DIR_PATH)
     assert len(files) == 2
-    assert "Y3ViZV8xXzFfMQ==.brep" in files
-    assert "Y3ViZV8xXzFfMQ==" in files
+    assert "Fv2MB2hDeoH6xwu4aBh5wA.brep" in files
+    assert "Fv2MB2hDeoH6xwu4aBh5wA" in files
+
+
+def test_cache_unique():
+    clear_cq_cache()
+    for _ in range(2):
+        cube1 = cube(1, 1, 1)
+        cube2 = cube(2, 2, 2)
+    assert cube1.BoundingBox().zlen == pytest.approx(1)
+    assert cube2.BoundingBox().zlen == pytest.approx(2)
 
 
 def test_not_exceeding_size():
@@ -78,3 +88,15 @@ def test_cache_type_return_with_modified_function():
     cube4 = cube(1, 1, 1)
     assert isinstance(cube3, cq.Solid)
     assert isinstance(cube4, cq.Solid)
+
+
+def test_workplane_typeerror():
+    @cq_cache(CACHE_SIZE)
+    def wp(a, kwarg=None):
+        return a
+
+    with pytest.raises(TypeError):
+        wp(cq.Workplane())
+
+    with pytest.raises(TypeError):
+        wp(1, kwarg=cq.Workplane())
