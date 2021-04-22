@@ -357,6 +357,6 @@ class Gear(BaseGear):
         if self.helix_angle == 0:
             self.gear = gear.extrude(self.b)
         else:
-            self.gear = gear.twistExtrude(self.b, self.helix_angle)
+            self.gear = gear.twistExtrude(self.b, self.b * tan(self.helix_angle)/self.r_p)
 
         return self.gear
