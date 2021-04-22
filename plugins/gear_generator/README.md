@@ -54,20 +54,20 @@ BevelGearSystem(args)
 
 #You can get info about the parameters by running 
 help(BevelGear)
->>> _make_gear(m, z, b, alpha=20, helix_angle=None, raw=False) method of cadquery.cq.Workplane instance
->>>     Creates a spur or helical involute gear
->>> 
->>>     Parameters
->>>     ----------
->>>     m : float
->>>         Spur gear modulus
->>>     z : int
->>>         Number of teeth
->>>     b : float
->>>         Tooth width
->>>     alpha : float
->>>         Pressure angle in degrees, industry standard is 20\ufffd
->>>     helix_angle : float
->>>         Helix angle of the helical gear in degrees
->>>         If None creates a spur gear, if specified create a helical gear
+
+Help on class Gear in module gear_generator.main:
+
+class Gear(BaseGear)
+ |  Gear(m: float, z: int, b: float, alpha: float = 20, helix_angle: float = 0, raw: bool = False)
+ |
+ |  Base gear class
+ |  This class stores attributes that are shared by any types of gear
+ |  Other gear classes inherit from this class
+ |
+ |  Attributes :
+ |      m : gear modulus
+ |      b : gear tooth facewidth
+ |      z : gear number of teeth
+ |      p : gear pitch
+-- Suite  --
 ```
