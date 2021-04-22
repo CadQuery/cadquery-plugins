@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 version = '1.0.0' # Please update this version number when updating the plugin
 plugin_name = 'gear_generator'
-description = 'Add methods to create all sort of gears'
+description = 'Add classes to create all sort of gears'
 long_description = ''
 author = 'Romain FERRU'
 author_email = 'Romain.ferru@gmail.com'

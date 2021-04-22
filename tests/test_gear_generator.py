@@ -1,106 +1,78 @@
 import cadquery as cq
 import plugins.gear_generator.gear_generator
 from unittest import TestCase
+from math import sin, radians
 
 class TestGearGenerator(TestCase):
-    def test_make_bevel_gear(self):
+    def test_bevel_gear(self):
         """
         Tests if the bevel gear has been created successfully 
         by checking if it's valid and it's resulting volume
-        Numerical values volumes were obtained with the Volume() functions on a Windows 10 machine with python 3.8.8
+        Numerical values volumes were obtained with the Volume() functions on a Windows 10 machine with python 3.9.2
         """
         m = 1.5
         z = 16
-        b = 6
-        delta = 40
+        b = 6        
+        delta = 45
+        R = (m*z/2) / sin(radians(delta))
         alpha = 20
+        helix_angle = 20
         clearance = 6
-        gear = cq.Workplane().make_bevel_gear(m, z, b, delta, alpha = alpha, clearance = clearance)
-        self.assertTrue(gear.val().isValid())
-        self.assertAlmostEqual(gear.val().Volume(),2226.028600964595)
+
+        gear1 = BevelGear(m, z, b, delta, R, alpha = alpha, clearance = clearance).build()
+        gear2 = BevelGear(m, z, b, delta, R, alpha = alpha, clearance = clearance, helix_angle=helix_angle).build()
+    
+        self.assertTrue(gear1.val().isValid())
+        self.assertAlmostEqual(gear1.val().Volume(),2505.7966225157024)
+
+        self.assertTrue(gear2.val().isValid())
+        self.assertAlmostEqual(gear1.val().Volume(),2505.7531046471067)
 
 
-    def test_make_bevel_gear_system(self):
+    def test_bevel_gear_system(self):
         """
         Tests if the bevel gear system been created successfully 
         by checking if it's valid and it's resulting volume
-        Numerical values volumes were obtained with the Volume() functions on a Windows 10 machine with python 3.8.8
+        Numerical values volumes were obtained with the Volume() functions on a Windows 10 machine with python 3.9.2
         """
         m = 1
         z1 = 16
         z2 = 22
         b = 2
         alpha = 20
+        helix_angle = 20
         clearance = 3
 
-        frozen_gear_system = cq.Workplane().make_bevel_gear_system(m, z1, z2, b, alpha=alpha, clearance = clearance, compound = True)
-        self.assertTrue(frozen_gear_system.val().isValid())
-        self.assertAlmostEqual(frozen_gear_system.val().Volume(),1024.4382489861382)
-
-        gear1, gear2 = cq.Workplane().make_bevel_gear_system(m, z1, z2, b, alpha=alpha, clearance = clearance, compound = False)
+        pinion1, gear1 = BevelGearSystem(m, z1, z2, b, clearance1 = clearance, clearance2= clearance, alpha=alpha).build()
+        self.assertTrue(pinion1.val().isValid())
         self.assertTrue(gear1.val().isValid())
-        self.assertAlmostEqual(gear1.val().Volume(),338.4940609342948)
-        
+        self.assertAlmostEqual(pinion1.val().Volume(),483.3443067836134)
+        self.assertAlmostEqual(gear1.val().Volume(),1126.5921554741049)
+
+        pinion2, gear2 = BevelGearSystem(m, z1, z2, b, clearance1 = clearance, clearance2= clearance, helix_angle=helix_angle, alpha=alpha).build()
+        self.assertTrue(pinion2.val().isValid())
         self.assertTrue(gear2.val().isValid())
-        self.assertAlmostEqual(gear2.val().Volume(),685.9422647793748)
+        self.assertAlmostEqual(pinion2.val().Volume(),483.3523144907097)
+        self.assertAlmostEqual(gear2.val().Volume(),1126.605502545581)
 
-
-    def test_make_gear(self):
+    def test_gear(self):
         """
         Tests if the gear has been created successfully 
         by checking if it's valid and it's resulting volume
-        Numerical values volumes were obtained with the Volume() functions on a Windows 10 machine with python 3.8.8
+        Numerical values volumes were obtained with the Volume() functions on a Windows 10 machine with python 3.9.2
         """
         m = 1.5
         z = 16
         b = 6
-        alpha = 20
-        clearance = 6
+        alpha = 14
         helix_angle = 40
 
-        gear1 = cq.Workplane().make_gear(m, z, b, alpha=alpha, raw = False)
+        gear1 = Gear(m, z, b, alpha=alpha, raw = False).build()
         self.assertTrue(gear1.val().isValid())
-        self.assertAlmostEqual(gear1.val().Volume(),2646.766251684174)
+        self.assertAlmostEqual(gear1.val().Volume(),2644.765564820555)
 
-        gear2 = cq.Workplane().make_gear(m, z, b, alpha=alpha, helix_angle = helix_angle, raw = False)
+        gear2 = Gear(m, z, b, alpha=alpha, helix_angle = helix_angle, raw = True).build()
         self.assertTrue(gear2.val().isValid())
-        self.assertAlmostEqual(gear2.val().Volume(),2646.816968237718)
+        self.assertAlmostEqual(gear2.val().Volume(),2640.6007586668684)
 
 
-    def test_make_crown_gear(self):
-        """
-        Tests if the crown gear has been created successfully 
-        by checking if it's valid and it's resulting volume
-        Numerical values volumes were obtained with the Volume() functions on a Windows 10 machine with python 3.8.8
-        """
-        m = 1.5
-        z = 16
-        b = 6
-        alpha = 20
-        clearance = 6
-
-        gear = cq.Workplane().make_crown_gear(m, z, b, alpha = alpha, clearance = clearance)
-        self.assertTrue(gear.val().isValid())
-        self.assertAlmostEqual(gear.val().Volume(),3352.5459114045543)
-
-    def test_make_rack_gear(self):
-        """
-        Tests if the rack gear has been created successfully 
-        by checking if it's valid and it's resulting volume
-        Numerical values volumes were obtained with the Volume() functions on a Windows 10 machine with python 3.8.8
-        """
-        m = 1.5
-        z = 16
-        b = 6
-        length = 40
-        alpha = 20
-        clearance = 6
-        helix_angle = 45
-
-        gear1 = cq.Workplane().make_rack_gear(m, b, length, clearance, alpha = alpha)
-        self.assertTrue(gear1.val().isValid())
-        self.assertAlmostEqual(gear1.val().Volume(),1381.355198257374)
-
-        gear2 = cq.Workplane().make_rack_gear(m, b, length, clearance, alpha = alpha, helix_angle = helix_angle)
-        self.assertTrue(gear2.val().isValid())
-        self.assertAlmostEqual(gear2.val().Volume(),1369.2236732856904)

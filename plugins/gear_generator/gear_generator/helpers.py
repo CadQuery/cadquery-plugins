@@ -1,20 +1,16 @@
-from math import cos, sin, radians
+from math import cos, sin, radians, acos
 import cadquery as cq
-def involute(r, sign = 1):
+
+def involute(r: float, sign: int = 1):
     """
     Defines an involute curve to create the flanks of the involute gears
 
-    Parameters
-    ----------
-    r : float
-        Radius of the involute (for a gear it's the pitch radius)
-    sign : positive or negative int
-        To draw the involute in positive or negative direction      
+    Args:
+        r : Radius of the involute (for a gear it's the pitch radius)
+        sign : 1 or -1 , to draw the involute in positive or negative direction      
 
-    Returns
-    -------
-    function
-        Returns a function to be used in cq.Workplane parametricCurve function
+    Returns:      
+        x,y -> tuple() : 2-tuple of x and y coordinates in space
     """
     def curve(t):
         x = r*(cos(t) + t*sin(t))
@@ -22,42 +18,29 @@ def involute(r, sign = 1):
         return x,sign*y
     return curve
 
-def test_bevel_parameters(m, z, b, r_inner, delta, alpha, phi, clearance, r_f_equiv, r_b_equiv):
+def spherical_involute(delta, delta_b, R):
     """
-    Test the provided parameters to see if they lead to a valid bevel gear
+    Equation of the spherical involute that lies on a sphere
 
-    Giving the way bevel gears are made in this plugin, there is parameters combinaison that leads
-    to an unvalid bevel gear geometry.
-    
-    This function aims to provide more informations to the user by raising more understandables errors 
-    that the ones OCP raises.
+    Args:
+        delta : the function variable, goes from the gear root cone angle to the gear tip cone angle
+        delta_b : angle of the base cone
+        R : radius of the associated sphere
 
+    Returns:      
+        x,y,z -> tuple() : 3-tuple of x and y and z coordinates in space  
     """
-    if z % 2 != 0:
-        raise ValueError(f"Number of teeths z must be even, try with {z-1} or {z+1}")
-    if r_b_equiv < r_f_equiv:
-        raise ValueError(f"Base radius < root radius leads to undercut gear. Undercut gears are not supported.\nTry with different values of parameters m, z or alpha")
-    h_f = 1.25*m
-    r_f_inner = r_inner - h_f*cos(delta)
-    clearance_max = r_f_inner / sin(phi)
-    if clearance > clearance_max:
-        raise ValueError(f"Too much clearance, for this set of parameters clearance must be <= {round(clearance_max,3)}")
+    theta = acos(cos(delta)/cos(delta_b))/sin(delta_b)
+    x = R*cos(theta*sin(delta_b))*sin(delta_b)*cos(theta) - R*sin(theta*sin(delta_b))* - sin(theta)
+    y = R*cos(theta*sin(delta_b))*sin(delta_b)*sin(theta) - R*sin(theta*sin(delta_b))* cos(theta)
+    z = R*cos(theta*sin(delta_b))*cos(delta_b)
+    return x,y,z
 
-def rotate_vector_2D(vector, angle):
+
+
+def rotate_vector_2D(vector: cq.Vector, angle: float):
     """
-    Rotates a 2D cq.Vector
-
-    Parameters
-    ----------
-    vector : cq.Vector
-        Vector to be rotated
-    angle : float
-        The angle in degrees    
-
-    Returns
-    -------
-    cq.Vector
-        Returns a vector rotated by the specified angle
+    Rotates a 2D cq.Vector `vector`by an angle of `angle` in degrees
     """
     angle = radians(angle)
     x = cos(angle)*vector.x - sin(angle)*vector.y

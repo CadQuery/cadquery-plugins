@@ -1,6 +1,6 @@
 # Gear generator
 
-This plugin provide additionals methods to create various gears. 
+This plugin provide classes to create various gears. 
 As for now you can create these gears (all the gears are involutes):
 * Spur gear
 
@@ -10,23 +10,11 @@ As for now you can create these gears (all the gears are involutes):
 
 <img src="images/helical_gear.PNG" width="600"/>
 
-* Rack gear 
-
-<img src="images/rack_gear_straight.PNG" width="600"/>
-
-* Helical rack gear
-
-<img src="images/rack_gear_helix.PNG" width="600"/>
-
-* Crown (or face) gear
-
-<img src="images/crown_gear.PNG" width="600"/>
-
-* Bevel gear (straight) (experimental)
+* Bevel gear (straight and helical)
 
 <img src="images/bevel_gear.PNG" width="600"/>
 
-* Bevel gear system (straight) (very experimental)
+* Bevel gear system (straight and helical)
 
 <img src="images/bevel_gear_system.PNG" width="600"/>
 
@@ -46,36 +34,26 @@ This plugin has no dependencies other than the cadquery library.
 
 ## Usage
 
-To use this plugin after it has been installed, just import it and use the make_... methods to create your gears
+To use this plugin after it has been installed, import it and create Gear objects
 ```python
 import cadquery as cq
-import gear_generator # automatically links the plugin functions to the cq.Workplane class
+import gear_generator
 
 module = 2
 nb_teeth = 12
 width = 8
-gear = cq.Workplane("XY").make_gear(module, nb_teeth, width)
+gear = Gear(module, nb_teeth, width).build() #Instantiate a gear object and call it's build method to get the gear in a cq.Workplane
 ```
 <img src="images/readme_example.PNG" width="300"/>
 
-Currently in cq-editor the automatical linking doesn't work so you should try to link it manually as below : 
+Below is the list of implemented gear classes :
 ```python
-import cadquery as cq 
-import gear_generator
-gear_generator.cutter_objects.register_cutter_objects()
-gear_generator.register()
-```
-
-Below is the list of implemented methods :
-```python
-cq.Workplane().make_gear(params)
-cq.Workplane().make_rack_gear(params)
-cq.Workplane().make_crown_gear(params)
-cq.Workplane().make_bevel_gear(params)
-cq.Workplane().make_bevel_gear_system(params)
+Gear(args)
+BevelGear(args)
+BevelGearSystem(args)
 
 #You can get info about the parameters by running 
-help(cq.Workplane().make_gear)
+help(BevelGear)
 >>> _make_gear(m, z, b, alpha=20, helix_angle=None, raw=False) method of cadquery.cq.Workplane instance
 >>>     Creates a spur or helical involute gear
 >>> 
