@@ -51,12 +51,14 @@ both of which are callbacks
       - `WORLD_AXIS_PLANES_YZ_ZX_XY`
       - `WORLD_AXIS_PLANES_ZX_XY_YZ`
       - `WORLD_AXIS_PLANES_ZX_YZ_XY`
-    2. `XAxisClosestTo` - a callable that chooses x axis perpendicular 
-       to face normal at face center as close as possible to one 
-       of user-specified unit vectors (usually world coordinate 
-       system axis unit vectors).
-       Vectors are checked in the order they are provided and the first one
-       that is not collinear with face normal is used.
+    2. `XAxisClosestTo` - a callable that chooses x axis 
+       perpendicular to face normal at face center as 
+       close as possible to one of user-specified unit 
+       vectors (usually world coordinate system axis unit 
+       vectors).
+       Vectors are checked in the order they are provided 
+       and the first one that is not collinear with face 
+       normal is used.
        The plugin provides the following vector lists
        - `WORLD_AXIS_UNIT_VECTORS_XYZ`
        - `WORLD_AXIS_UNIT_VECTORS_XZY`
