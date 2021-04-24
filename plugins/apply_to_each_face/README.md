@@ -16,7 +16,8 @@ are good enough in many cases.
 ```
 pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=apply_to_each_face&subdirectory=plugins/apply_to_each_face"
 ```
-You can also clone the repository of the plugin and run in the repository the following command :
+You can also clone the repository of the plugin and 
+run in the repository the following command:
 ```
 python setup.py install
 ```
@@ -28,9 +29,12 @@ This plugin has no dependencies other than the cadquery library.
 ## Usage
 
 To use this plugin after it has been installed, 
-just import it and use `applyToEachFace(..)` function. 
-`applyToEachFace` has two arguments
-both of which are callbacks
+just import[^cqeditorimport] it and use `applyToEachFace(..)`
+method of `Workplane`. To use this plugin in `CQ-editor` 
+you have to reload `apply_to_each_face` on each run 
+(see examples below). Otherwise second and subsequent runs will fail.
+
+`applyToEachFace` has two arguments both of which are callbacks. 
 
 1. `f_workplane_selector(face)` callback accepts a face and returns 
     CadQuery Workplane instance that is passed to the next callback.
@@ -74,148 +78,209 @@ have to be linearly independent but their span (linear hull) should be all
 3D vector space for these face coordinate system selectors to work on 
 arbitrary faces. In some cases this requirement can be relaxed.
 
+## Examples
 
-## Example 1
+### Example 1
 ```python
+import sys
 import cadquery as cq
-from applyToEachFace import \
-    XAxisInPlane,\
-    WORLD_AXIS_PLANES_XY_ZX_YZ
+
+if "apply_to_each_face" in sys.modules:
+    del sys.modules["apply_to_each_face"]
+from apply_to_each_face import (
+    XAxisInPlane,
+    WORLD_AXIS_PLANES_XY_ZX_YZ,
+)
+
 
 def main_body():
-    return cq.Workplane("XY")\
-    .box(10.0,10.0,10.0,centered=(True,True,True))\
-    .union(
+    return (
         cq.Workplane("XY")
-        .move(15,0)
-        .box(10.0,10.0,10.0,centered=(True,True,True))) 
+        .box(10.0, 10.0, 10.0, centered=(True, True, True))
+        .union(
+            cq.Workplane("XY")
+            .move(15, 0)
+            .box(
+                10.0,
+                10.0,
+                10.0,
+                centered=(True, True, True),
+            )
+        )
+    )
 
-result =\
-    main_body().union(    
-        main_body()\
-        .faces()\
-        .applyToEachFace(
-            XAxisInPlane(WORLD_AXIS_PLANES_XY_ZX_YZ),
-            lambda wp, face:\
-                wp.circle(4).extrude(1)))
+
+result = main_body().union(
+    main_body()
+    .faces()
+    .applyToEachFace(
+        XAxisInPlane(WORLD_AXIS_PLANES_XY_ZX_YZ),
+        lambda wp, face: wp.circle(4).extrude(1),
+    )
+)
 ```
-![example 1](ex1.png "Example 1")
+![example 1](images/ex1.png "Example 1")
 
 
-## Example 2
+### Example 2
 ```python
+import sys
 import cadquery as cq
-from applyToEachFace import \
-    XAxisInPlane,\
-    WORLD_AXIS_PLANES_XY_ZX_YZ
+
+if "apply_to_each_face" in sys.modules:
+    del sys.modules["apply_to_each_face"]
+from apply_to_each_face import (
+    XAxisInPlane,
+    WORLD_AXIS_PLANES_XY_YZ_ZX,
+)
+
 
 def main_body():
-    return cq.Workplane("XY")\
-    .polygon(5, 10.0)\
-    .extrude(5)
+    return cq.Workplane("XY").polygon(5, 10.0).extrude(5)
 
-result =\
-    main_body().union(    
-        main_body()\
-        .faces("#Z")\
-        .applyToEachFace(
-            XAxisInPlane(WORLD_AXIS_PLANES_XY_YZ_ZX),
-            lambda wp, face:\
-                wp.rect(1,2).extrude(3)))
+
+result = main_body().union(
+    main_body()
+    .faces("#Z")
+    .applyToEachFace(
+        XAxisInPlane(WORLD_AXIS_PLANES_XY_YZ_ZX),
+        lambda wp, face: wp.rect(1, 2).extrude(3),
+    )
+)
 ```
-![example 2](ex2.png "Example 2")
+![example 2](images/ex2.png "Example 2")
 
-## Example 3
+### Example 3
 
 ```python
+import sys
 import cadquery as cq
-from applyToEachFace import \
-    XAxisInPlane,\
-    WORLD_AXIS_PLANES_XY_ZX_YZ
+
+if "apply_to_each_face" in sys.modules:
+    del sys.modules["apply_to_each_face"]
+from apply_to_each_face import (
+    XAxisInPlane,
+    WORLD_AXIS_PLANES_XY_ZX_YZ,
+)
+
 
 def main_body():
-    return cq.Workplane("XY")\
-    .polygon(6, 10.0)\
-    .extrude(3, taper=45)
+    return (
+        cq.Workplane("XY")
+        .polygon(6, 10.0)
+        .extrude(3, taper=45)
+    )
 
-result =\
-    main_body().faces("<Z").shell(-0.5).cut(    
-        main_body()\
-        .faces("not <Z")\
+
+result = (
+    main_body()
+    .faces("<Z")
+    .shell(-0.5)
+    .cut(
+        main_body()
+        .faces("not <Z")
         .applyToEachFace(
             XAxisInPlane(WORLD_AXIS_PLANES_XY_ZX_YZ),
-            lambda wp, face:\
-                wp.add(face)\
-                  .wires()\
-                  .toPending()\
-                  .offset2D(-0.8)\
-                  .extrude(-2)))
+            lambda wp, face: wp.add(face)
+            .wires()
+            .toPending()
+            .offset2D(-0.8)
+            .extrude(-2),
+        )
+    )
+)
 ```
-![example 3](ex3.png "Example 3")
+![example 3](images/ex3.png "Example 3")
 
-## Example 4
+### Example 4
 
 ```python
+import sys
 import cadquery as cq
-from applyToEachFace import \
-    XAxisInPlane,\
-    WORLD_AXIS_PLANES_XY_ZX_YZ,\
-    XAxisClosestTo,\
-    WORLD_AXIS_UNIT_VECTORS_XYZ
+
+if "apply_to_each_face" in sys.modules:
+    del sys.modules["apply_to_each_face"]
+from apply_to_each_face import (
+    XAxisInPlane,
+    WORLD_AXIS_PLANES_XY_ZX_YZ,
+    XAxisClosestTo,
+    WORLD_AXIS_UNIT_VECTORS_XYZ,
+)
+
 
 def main_body():
-    return cq.Workplane("XY")\
-    .polygon(6, 10.0)\
-    .extrude(3, taper=45)    
-        
-result_x_axis_in_plane =\
-    main_body().union(
-        main_body()\
-        .faces("#Z")\
-        .applyToEachFace(
-            XAxisInPlane(WORLD_AXIS_PLANES_XY_ZX_YZ),
-            lambda wp, face:\
-                wp.rect(2,1).extrude(2))) 
-        
-result_x_axis_closest_to =\
-    main_body().union(
-        main_body()\
-        .faces("#Z")\
+    return (
+        cq.Workplane("XY")
+        .polygon(6, 10.0)
+        .extrude(3, taper=45)
+    )
+
+
+result_x_axis_in_plane = main_body().union(
+    main_body()
+    .faces("#Z")
+    .applyToEachFace(
+        XAxisInPlane(WORLD_AXIS_PLANES_XY_ZX_YZ),
+        lambda wp, face: wp.rect(2, 1).extrude(2),
+    )
+)
+
+result_x_axis_closest_to = (
+    main_body()
+    .union(
+        main_body()
+        .faces("#Z")
         .applyToEachFace(
             XAxisClosestTo(WORLD_AXIS_UNIT_VECTORS_XYZ),
-            lambda wp, face:\
-                wp.rect(2,1).extrude(2)))\
-    .translate(cq.Vector(8,8,0))
+            lambda wp, face: wp.rect(2, 1).extrude(2),
+        )
+    )
+    .translate(cq.Vector(8, 8, 0))
+)
 ```
 
-![example 4](ex4.png "Example 4")
+![example 4](images/ex4.png "Example 4")
 
-## Example 5
+### Example 5
 
 ```python
+import sys
+import cadquery as cq
+
+if "apply_to_each_face" in sys.modules:
+    del sys.modules["apply_to_each_face"]
+from apply_to_each_face import (
+    XAxisInPlane,
+    WORLD_AXIS_PLANES_XY_ZX_YZ,
+    XAxisClosestTo,
+    WORLD_AXIS_UNIT_VECTORS_ZXY,
+)
+
+
 def main_body():
-    return cq.Workplane("XY")\
-    .rect(10.0, 10.0)\
-    .extrude(5, both=True)
-    
-result =\
-    main_body().union(
-        main_body()\
-        .faces()\
+    return (
+        cq.Workplane("XY")
+        .rect(10.0, 10.0)
+        .extrude(5, both=True)
+    )
+
+
+result = (
+    main_body()
+    .union(
+        main_body()
+        .faces()
         .applyToEachFace(
             XAxisClosestTo(WORLD_AXIS_UNIT_VECTORS_ZXY),
-            lambda wp, face:\
-                wp.add(face)\
-                  .wires()\
-                  .toPending()\
-                  .twistExtrude(10, 45)))\
-    .edges()\
+            lambda wp, face: wp.add(face)
+            .wires()
+            .toPending()
+            .twistExtrude(10, 45),
+        )
+    )
+    .edges()
     .fillet(3)
+)
 ```  
 
-![example 5](ex5.png "Example 5")
-
-
-
-
-
+![example 5](images/ex5.png "Example 5")
