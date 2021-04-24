@@ -1,5 +1,5 @@
 import cadquery as cq
-import plugins.gear_generator.gear_generator
+from plugins.gear_generator.gear_generator import *
 from unittest import TestCase
 from math import sin, radians
 
@@ -62,17 +62,17 @@ class TestGearGenerator(TestCase):
         Numerical values volumes were obtained with the Volume() functions on a Windows 10 machine with python 3.9.2
         """
         m = 1.5
-        z = 16
-        b = 6
+        z = 22
+        b = 12
         alpha = 14
-        helix_angle = 40
+        helix_angle = 35
 
         gear1 = Gear(m, z, b, alpha=alpha, raw = False).build()
         self.assertTrue(gear1.val().isValid())
-        self.assertAlmostEqual(gear1.val().Volume(),2644.765564820555)
+        self.assertAlmostEqual(gear1.val().Volume(),10113.473492717025)
 
         gear2 = Gear(m, z, b, alpha=alpha, helix_angle = helix_angle, raw = True).build()
         self.assertTrue(gear2.val().isValid())
-        self.assertAlmostEqual(gear2.val().Volume(),2640.6007586668684)
+        self.assertAlmostEqual(gear2.val().Volume(),10033.574314576623)
 
 
