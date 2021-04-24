@@ -29,7 +29,7 @@ This plugin has no dependencies other than the cadquery library.
 ## Usage
 
 To use this plugin after it has been installed, 
-just import[^cqeditorimport] it and use `applyToEachFace(..)`
+just import it and use `applyToEachFace(..)`
 method of `Workplane`. To use this plugin in `CQ-editor` 
 you have to reload `apply_to_each_face` on each run 
 (see examples below). Otherwise second and subsequent runs will fail.
