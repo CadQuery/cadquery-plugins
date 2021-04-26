@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = "1.0.0"  # Please update this version number when updating the plugin
+version = "1.0.1"  # Please update this version number when updating the plugin
 plugin_name = "cq_cache"
 description = "File based cache decorator"
 long_description = "Allow to use file based cache to not have to rebuild every cadquery model from scratch"
