@@ -109,10 +109,10 @@ def using_same_function(fct, file_name):
     It assure that if the function has been modify, the cache won't load a wrong cached file
     """
     with open(file_name, "r") as f:
-        cached_function = "".join(f.readlines()[:-1])
+        cached_function_hash = int(f.readlines()[0])
 
-    caching_function = inspect.getsource(fct)
-    if cached_function == caching_function:
+    caching_function_hash = hash(fct)
+    if cached_function_hash == caching_function_hash:
         return True
     else:
         return False
@@ -182,7 +182,8 @@ def cq_cache(cache_size=500):
                 )
 
                 with open(os.path.join(CACHE_DIR_PATH, file_name), "w") as fun_file:
-                    fun_file.write(inspect.getsource(function))
+                    fun_file.write(str(hash(function)))
+                    fun_file.write("\n")
                     fun_file.write(shape_type.__name__)
 
                 cache_dir_size = get_cache_dir_size(CACHE_DIR_PATH)
