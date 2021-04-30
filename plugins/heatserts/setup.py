@@ -2,13 +2,13 @@ from setuptools import setup, find_packages
 
 # Change these variables to set the information for your plugin
 version = "1.0.0"  # Please update this version number when updating the plugin
-plugin_name = "sampleplugin"  # The name of your plugin
-description = "What does your plugin do?"
-long_description = "Extended explanation of your plugin"
-author = "Your name"
-author_email = "optional, you can put GitHub user name instead"
+plugin_name = "heatserts"  # The name of your plugin
+description = "Holes to suit heatserts"
+long_description = "Save time by creating standard holes for commonly used heatserts. Heatserts are often used for 3D printed parts."
+author = "Marcus Boyd"
+author_email = "marcus7070@github"
 packages = []  # List of packages that will be installed with this plugin
-py_modules = ["sampleplugin"]  # Put the name of your plugin's .py file here
+py_modules = ["heatserts"]  # Put the name of your plugin's .py file here
 install_requires = (
     []
 )  # Any dependencies that pip also needs to install to make this plugin work
