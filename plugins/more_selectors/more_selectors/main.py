@@ -5,8 +5,8 @@ from . import utils
 
 class InfiniteCylinderSelector(cq.Selector):
     """
-    Selects any shape present in the defined infinite cylinder 
-    based on the shape center of mass point.   
+    Selects any shape present in the defined infinite cylinder
+    based on the shape center of mass point.
 
     """
 
@@ -67,8 +67,8 @@ class InfiniteCylinderSelector(cq.Selector):
 
 class InfHollowCylinderSelector(InfiniteCylinderSelector):
     """
-    Selects any shape present in the defined infinite hollow  
-    cylinder based on the shape center of mass point.   
+    Selects any shape present in the defined infinite hollow
+    cylinder based on the shape center of mass point.
     """
 
     def __init__(self, origin, along_axis, outer_radius, inner_radius, debug=False):
@@ -95,8 +95,8 @@ class InfHollowCylinderSelector(InfiniteCylinderSelector):
 
 class CylinderSelector(InfiniteCylinderSelector):
     """
-    Selects any shape present in the defined cylinder 
-    based on the shape center of mass point.   
+    Selects any shape present in the defined cylinder
+    based on the shape center of mass point.
     """
 
     def __init__(self, origin, along_axis, height, radius, debug=False):
@@ -121,8 +121,8 @@ class CylinderSelector(InfiniteCylinderSelector):
 
 class HollowCylinderSelector(InfHollowCylinderSelector):
     """
-    Selects any shape present in the defined hollow cylinder 
-    based on the shape center of mass point.   
+    Selects any shape present in the defined hollow cylinder
+    based on the shape center of mass point.
     """
 
     def __init__(
@@ -152,7 +152,7 @@ class HollowCylinderSelector(InfHollowCylinderSelector):
 class SphereSelector(cq.Selector):
     """
     Selects any shape present in the defined sphere
-    based on the shape center of mass point.   
+    based on the shape center of mass point.
     """
 
     def __init__(self, origin, radius, debug=False):
@@ -178,7 +178,7 @@ class SphereSelector(cq.Selector):
 class HollowSphereSelector(SphereSelector):
     """
     Selects any shape present in the defined hollow sphere
-    based on the shape center of mass point.   
+    based on the shape center of mass point.
     """
 
     def __init__(self, origin, outer_radius, inner_radius, debug=False):
