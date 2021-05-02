@@ -1,14 +1,11 @@
 from setuptools import setup, find_packages
 
-# Change these variables to set the information for your plugin
-version = "1.0.0"  # Please update this version number when updating the plugin
-plugin_name = "sampleplugin"  # The name of your plugin
-description = "What does your plugin do?"
-long_description = "Extended explanation of your plugin"
-author = "Your name"
-author_email = "optional, you can put GitHub user name instead"
-packages = []  # List of packages that will be installed with this plugin
-py_modules = ["sampleplugin"]  # Put the name of your plugin's .py file here
+version = "1.0.1"  # Please update this version number when updating the plugin
+plugin_name = "cq_cache"
+description = "File based cache decorator"
+long_description = "Allow to use file based cache to not have to rebuild every cadquery model from scratch"
+author = "Romain FERRU"
+author_email = "Romain.ferru@gmail.com"
 install_requires = (
     []
 )  # Any dependencies that pip also needs to install to make this plugin work
@@ -23,8 +20,7 @@ setup(
     author_email=author_email,
     description=description,
     long_description=long_description,
-    packages=packages,
-    py_modules=py_modules,
+    packages=find_packages(where="cq_cache"),
     install_requires=install_requires,
     include_package_data=True,
     zip_safe=False,
