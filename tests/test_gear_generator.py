@@ -73,8 +73,6 @@ class TestGearGenerator(TestCase):
 
         gear2 = Gear(m, z, b, alpha=alpha, helix_angle = helix_angle, raw = True).build()
         self.assertTrue(gear2.val().isValid())
-        while gear2.val().Volume() < 0:
-            gear2 = Gear(m, z, b, alpha=alpha, helix_angle = helix_angle, raw = True).build()
         self.assertAlmostEqual(gear2.val().Volume(),10033.574314576623,1)
 
 
