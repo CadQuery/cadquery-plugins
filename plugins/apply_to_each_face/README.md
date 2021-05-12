@@ -13,12 +13,12 @@ are good enough in many cases.
 
 ## Installation
 
-```
+```bash
 pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=apply_to_each_face&subdirectory=plugins/apply_to_each_face"
 ```
 You can also clone the repository of the plugin and 
 run in the repository the following command:
-```
+```bash
 python setup.py install
 ```
 
@@ -31,10 +31,20 @@ This plugin has no dependencies other than the cadquery library.
 To use this plugin after it has been installed, 
 just import it and use `applyToEachFace(..)`
 method of `Workplane`. To use this plugin in `CQ-editor` 
-you have to reload `apply_to_each_face` on each run 
-(see examples below). Otherwise second and subsequent runs will fail.
+you have to
+- either (preferably) untick `Edit -> Preferences -> Debugger -> Reload CQ` 
+  option 
+- or reload `apply_to_each_face` module on each run 
+like so
+```python
+if "apply_to_each_face" in sys.modules:
+    del sys.modules["apply_to_each_face"]
+```
 
-`applyToEachFace` has two arguments both of which are callbacks. 
+If none of the above is done second and subsequent runs 
+of a script using `apply_to_each_face` in CQ-Editor will fail.
+
+`applyToEachFace(..)` method has two arguments both of which are callbacks. 
 
 1. `f_workplane_selector(face)` callback accepts a face and returns 
     CadQuery Workplane instance that is passed to the next callback.
@@ -85,8 +95,6 @@ arbitrary faces. In some cases this requirement can be relaxed.
 import sys
 import cadquery as cq
 
-if "apply_to_each_face" in sys.modules:
-    del sys.modules["apply_to_each_face"]
 from apply_to_each_face import (
     XAxisInPlane,
     WORLD_AXIS_PLANES_XY_ZX_YZ,
@@ -127,8 +135,6 @@ result = main_body().union(
 import sys
 import cadquery as cq
 
-if "apply_to_each_face" in sys.modules:
-    del sys.modules["apply_to_each_face"]
 from apply_to_each_face import (
     XAxisInPlane,
     WORLD_AXIS_PLANES_XY_YZ_ZX,
@@ -156,8 +162,6 @@ result = main_body().union(
 import sys
 import cadquery as cq
 
-if "apply_to_each_face" in sys.modules:
-    del sys.modules["apply_to_each_face"]
 from apply_to_each_face import (
     XAxisInPlane,
     WORLD_AXIS_PLANES_XY_ZX_YZ,
@@ -198,8 +202,6 @@ result = (
 import sys
 import cadquery as cq
 
-if "apply_to_each_face" in sys.modules:
-    del sys.modules["apply_to_each_face"]
 from apply_to_each_face import (
     XAxisInPlane,
     WORLD_AXIS_PLANES_XY_ZX_YZ,
@@ -247,8 +249,6 @@ result_x_axis_closest_to = (
 import sys
 import cadquery as cq
 
-if "apply_to_each_face" in sys.modules:
-    del sys.modules["apply_to_each_face"]
 from apply_to_each_face import (
     XAxisInPlane,
     WORLD_AXIS_PLANES_XY_ZX_YZ,
