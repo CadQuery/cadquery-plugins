@@ -12,9 +12,7 @@ author = "Lorenz Neureuter"
 author_email = "hello@lorenz.space"
 packages = []
 py_modules = ["teardrop"]
-install_requires = (
-    []
-)
+install_requires = []
 
 
 setup(
