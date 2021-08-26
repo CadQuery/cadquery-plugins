@@ -14,4 +14,4 @@ If you are interested in having a plugin included in this list, it must meet the
 
 | Plugin Name    | Category     | Link        | Description      | Author      |
 | :------------- | :----------- | :---------- | :--------------- | :---------- |
-No Plugins Listed At This Time
+| cq_gears       | Modeling     | [README](https://github.com/meadiode/cq_gears/blob/main/README.md) |Parametric involute profile gear generator |[meadiode](https://github.com/meadiode)|
