@@ -25,7 +25,11 @@ def _importDXFstream(stream, tol=1e-6, exclude=[]):
     faces = []
 
     for name, layer in dxf.modelspace().groupby(dxfattrib="layer").items():
-        res = importers._dxf_convert(layer, tol) if name.lower() not in exclude_lwr else None
+        res = (
+            importers._dxf_convert(layer, tol)
+            if name.lower() not in exclude_lwr
+            else None
+        )
         if res:
             wire_sets = sortWiresByBuildOrder(res)
             for wire_set in wire_sets:
@@ -37,13 +41,17 @@ def _extrusion(
     size: Tuple[float, float],
     profile,
     len: float,
-    centered: Union[bool, Tuple[bool, bool, bool]]
+    centered: Union[bool, Tuple[bool, bool, bool]],
 ):
-    ref = importlib.resources.files('plugins.extrusions').joinpath('profiles/').joinpath(profile)
+    ref = (
+        importlib.resources.files("plugins.extrusions")
+        .joinpath("profiles/")
+        .joinpath(profile)
+    )
     with ref.open() as fp:
         faces = _importDXFstream(fp)
 
-    PROFILE =  cq.Workplane("XY").newObject(faces).wires()
+    PROFILE = cq.Workplane("XY").newObject(faces).wires()
 
     if isinstance(centered, bool):
         centered = (centered, centered, centered)
@@ -60,44 +68,29 @@ def _extrusion(
     return cq.Workplane("XY").newObject([e])
 
 
-def e2020(
-    len: float,
-    centered: Union[bool, Tuple[bool, bool, bool]] = True
-):
-    return _extrusion([20, 20], 'e2020.dxf', len, centered)
+def e2020(len: float, centered: Union[bool, Tuple[bool, bool, bool]] = True):
+    return _extrusion([20, 20], "e2020.dxf", len, centered)
 
-def e2040(
-    len: float,
-    centered: Union[bool, Tuple[bool, bool, bool]] = True
-):
-    return _extrusion([40, 20], 'e2040.dxf', len, centered)
 
-def e2080(
-    len: float,
-    centered: Union[bool, Tuple[bool, bool, bool]] = True
-):
-    return _extrusion([80, 20], 'e2080.dxf', len, centered)
+def e2040(len: float, centered: Union[bool, Tuple[bool, bool, bool]] = True):
+    return _extrusion([40, 20], "e2040.dxf", len, centered)
 
-def e4040(
-    len: float,
-    centered: Union[bool, Tuple[bool, bool, bool]] = True
-):
-    return _extrusion([40, 40], 'e4040.dxf', len, centered)
 
-def v2020(
-    len: float,
-    centered: Union[bool, Tuple[bool, bool, bool]] = True
-):
-    return _extrusion([20, 20], 'v2020.dxf', len, centered)
+def e2080(len: float, centered: Union[bool, Tuple[bool, bool, bool]] = True):
+    return _extrusion([80, 20], "e2080.dxf", len, centered)
 
-def v2040(
-    len: float,
-    centered: Union[bool, Tuple[bool, bool, bool]] = True
-):
-    return _extrusion([40, 20], 'v2040.dxf', len, centered)
 
-def v4040(
-    len: float,
-    centered: Union[bool, Tuple[bool, bool, bool]] = True
-):
-    return _extrusion([40, 40], 'v4040.dxf', len, centered)
+def e4040(len: float, centered: Union[bool, Tuple[bool, bool, bool]] = True):
+    return _extrusion([40, 40], "e4040.dxf", len, centered)
+
+
+def v2020(len: float, centered: Union[bool, Tuple[bool, bool, bool]] = True):
+    return _extrusion([20, 20], "v2020.dxf", len, centered)
+
+
+def v2040(len: float, centered: Union[bool, Tuple[bool, bool, bool]] = True):
+    return _extrusion([40, 20], "v2040.dxf", len, centered)
+
+
+def v4040(len: float, centered: Union[bool, Tuple[bool, bool, bool]] = True):
+    return _extrusion([40, 40], "v4040.dxf", len, centered)
