@@ -1,4 +1,3 @@
-import cadquery as cq
 from plugins.extrusions import extrusions
 
 
@@ -26,7 +25,6 @@ def test_e2040_basic():
     assert s.solids().size() == 1
     assert s.solids().faces().size() == 108
     assert s.solids().vertices().size() == 212
-
 
 
 def test_e2080_basic():

@@ -3,38 +3,8 @@ import importlib.resources
 import cadquery as cq
 from cadquery.occ_impl import importers
 from cadquery.occ_impl.geom import Vector, Location
-from cadquery.occ_impl.shapes import Face, sortWiresByBuildOrder
-import ezdxf
 
 T = TypeVar("T", bound="Workplane")
-
-
-def _importDXFstream(stream, tol=1e-6, exclude=[]):
-    """
-    Loads a DXF stream
-
-    :param stream: The path and name of the DXF stream to be imported
-    :param tol: The tolerance used for merging edges into wires (default: 1e-6)
-    :param exclude: a list of layer names not to import (default: [])
-    """
-
-    # normalize layer names to conform the DXF spec
-    exclude_lwr = [ex.lower() for ex in exclude]
-
-    dxf = ezdxf.read(stream)
-    faces = []
-
-    for name, layer in dxf.modelspace().groupby(dxfattrib="layer").items():
-        res = (
-            importers._dxf_convert(layer, tol)
-            if name.lower() not in exclude_lwr
-            else None
-        )
-        if res:
-            wire_sets = sortWiresByBuildOrder(res)
-            for wire_set in wire_sets:
-                faces.append(Face.makeFromWires(wire_set[0], wire_set[1:]))
-    return faces
 
 
 def _extrusion(
@@ -60,23 +30,18 @@ def _extrusion(
         .joinpath("profiles/")
         .joinpath(profile)
     )
-    with ref.open() as stream:
-        faces = _importDXFstream(stream)
-
-    PROFILE = cq.Workplane("XY").newObject(faces).wires()
+    profile = importers.importDXF(ref).wires()
 
     if isinstance(centered, bool):
         centered = (centered, centered, centered)
 
-    offset = Vector()
-    if not centered[0]:
-        offset += Vector(size[0] / 2, 0, 0)
-    if not centered[1]:
-        offset += Vector(0, size[1] / 2, 0)
-    if centered[2]:
-        offset += Vector(0, 0, -length / 2)
+    offset = Vector(
+        0 if centered[0] else size[0] / 2,
+        0 if centered[1] else size[0] / 2,
+        -length / 2 if centered[2] else 0,
+    )
 
-    extrusion = PROFILE.toPending()._extrude(length).move(Location(offset))
+    extrusion = profile.toPending()._extrude(length).move(Location(offset))
     return cq.Workplane("XY").newObject([extrusion])
 
 
