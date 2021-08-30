@@ -1,5 +1,6 @@
 from typing import TypeVar, Union, Tuple
-import importlib.resources
+#import importlib.resources
+import pkg_resources
 import cadquery as cq
 from cadquery.occ_impl import importers
 from cadquery.occ_impl.geom import Vector, Location
@@ -25,12 +26,13 @@ def _extrusion(
         extend in the positive x, y and z directions. Can also use a 3-tuple to
         specify centering along each axis.
     """
-    ref = (
-        importlib.resources.files("plugins.extrusions")
-        .joinpath("profiles/")
-        .joinpath(profile)
-    )
-    profile = importers.importDXF(ref).wires()
+    #file = (
+    #    importlib.resources.files("plugins.extrusions")
+    #    .joinpath("profiles/")
+    #    .joinpath(profile)
+    #)
+    file = pkg_resources.resource_filename(__name__, "profiles/" + profile)
+    profile = importers.importDXF(file).wires()
 
     if isinstance(centered, bool):
         centered = (centered, centered, centered)
