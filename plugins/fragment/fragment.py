@@ -53,6 +53,7 @@ def _fragment(
         it.Next()
     return Compound.makeCompound(los)
 
+
 # Patch the function(s) into the Compound class
 cq.Compound._fragment = _fragment
 cq.Solid._fragment = _fragment
