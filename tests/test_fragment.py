@@ -1,6 +1,7 @@
 import cadquery as cq
 import plugins.fragment.fragment as fragment
 
+
 def test_fragment_volume():
 
     plate = cq.Workplane("XY").box(20, 20, 20)
