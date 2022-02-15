@@ -93,9 +93,7 @@ def fragment(
 
     # now combine with existing solid, if there is one
     # look for parents to cut from
-    solidRef = self._findType(
-        (Solid, Compound), searchStack=True, searchParents=True
-    )
+    solidRef = self._findType((Solid, Compound), searchStack=True, searchParents=True)
     if solidRef is not None:
         r = solidRef._fragment(*newS, glue=glue, tol=tol)
     elif len(newS) > 1:
