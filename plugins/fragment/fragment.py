@@ -17,6 +17,7 @@ from OCP.BRepAlgoAPI import BRepAlgoAPI_BuilderAlgo
 from OCP.TopTools import TopTools_ListOfShape
 from OCP.TopoDS import TopoDS_Iterator
 
+
 def _fragment(
     self, *toFragment: "Shape", glue: bool = False, tol: Optional[float] = None
 ) -> "Shape":
