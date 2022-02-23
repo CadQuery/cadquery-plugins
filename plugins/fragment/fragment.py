@@ -14,6 +14,7 @@ from cadquery.occ_impl.shapes import (
 )
 
 from OCP.BRepAlgoAPI import BRepAlgoAPI_BuilderAlgo
+from OCP.BOPAlgo import BOPAlgo_GlueEnum
 from OCP.TopTools import TopTools_ListOfShape
 from OCP.TopoDS import TopoDS_Iterator
 
