@@ -7,7 +7,7 @@ def applyToEachFace(
     wp: cq.Workplane,
     f_workplane_selector: Callable[[cq.Face], cq.Workplane],
     f_draw: Callable[[cq.Workplane, cq.Face], cq.Workplane],
-    combine: cq.CombineMode = True,
+    combine: Union[bool, Literal["cut", "a", "s"]] = True,
     clean: bool = True,
 ) -> cq.Workplane:
     """
