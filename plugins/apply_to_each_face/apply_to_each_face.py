@@ -7,6 +7,8 @@ def applyToEachFace(
     wp: cq.Workplane,
     f_workplane_selector: Callable[[cq.Face], cq.Workplane],
     f_draw: Callable[[cq.Workplane, cq.Face], cq.Workplane],
+    combine: cq.CombineMode = True,
+    clean: bool = True,
 ) -> cq.Workplane:
     """
     Basically equivalent to `Workplane.each(..)` but
@@ -21,6 +23,13 @@ def applyToEachFace(
         and `XAxisClosestTo`
     :param f_draw: a callback that accepts a workplane and
         a face and draws something in that workplane
+    :param combine: True or "a" to combine the resulting solid 
+        with parent solids if found, "cut" or "s" to remove 
+        the resulting solid from the parent solids if found. 
+        False to keep the resulting solid separated from 
+        the parent solids.
+    :param boolean clean: call :py:meth:`clean` afterwards to
+        have a clean shape
     """
 
     def each_callback(face):
@@ -28,7 +37,7 @@ def applyToEachFace(
 
         return f_draw(wp_face, face).vals()[0]
 
-    return wp.each(each_callback)
+    return wp.each(each_callback,combine=combine,clean=clean)
 
 
 v_x_unit = cq.Vector(1, 0, 0)
