@@ -1,4 +1,4 @@
-from typing import Callable, List, TypeVar
+from typing import Callable, List, TypeVar, Union, Literal
 
 import cadquery as cq
 
