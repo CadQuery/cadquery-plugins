@@ -37,7 +37,7 @@ def applyToEachFace(
 
         return f_draw(wp_face, face).vals()[0]
 
-    return wp.each(each_callback,combine=combine,clean=clean)
+    return wp.each(each_callback, combine=combine, clean=clean)
 
 
 v_x_unit = cq.Vector(1, 0, 0)
