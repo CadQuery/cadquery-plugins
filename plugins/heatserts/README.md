@@ -5,7 +5,7 @@ Generates a hole that accepts a heatsert. Heatserts are often used in 3D printed
 ## Installation
 
 ```
-pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=heatsert&subdirectory=plugins/heatsert"
+pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=heatserts&subdirectory=plugins/heatserts"
 ```
 You can also clone the repository of the plugin and run in the repository the following command:
 ```
