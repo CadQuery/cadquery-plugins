@@ -24,16 +24,19 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v5
+      - uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: '3.10'
+          mamba-version: "latest"
+          python-version: 3.10
+          activate-environment: freecad
 
       # Installs CadQuery and pytest so that the test can be run
       - name: Install CadQuery and pytest
         shell: bash --login {0}
         run: |
-          pip install cadquery
-          pip install pytest
+          mamba install freecad
+          mamba install -c cadquery -c conda-forge cadquery=master
+          mamba install -c anaconda pytest
 
       # Runs the tests
       - name: Run tests
@@ -46,14 +49,16 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v5
+      - uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: '3.10'
+          miniconda-version: "latest"
+          python-version: 3.10
+          activate-environment: test
       - name: Install CadQuery and pytest
         shell: bash --login {0}
         run: |
-          pip install cadquery
-          pip install pytest
+          conda install -c cadquery -c conda-forge cadquery=master
+          conda install -c anaconda pytest
       - name: Run tests
         shell: bash --login {0}
         run: |
@@ -64,14 +69,16 @@ jobs:
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v5
+      - uses: conda-incubator/setup-miniconda@v2
         with:
-          python-version: '3.10'
+          miniconda-version: "latest"
+          python-version: 3.10
+          activate-environment: test
       - name: Install CadQuery and pytest
         shell: pwsh
         run: |
-          pip install cadquery
-          pip install pytest
+          conda install -c cadquery -c conda-forge cadquery=master
+          conda install -c anaconda pytest
       - name: Run tests
         shell: pwsh
         run: |
