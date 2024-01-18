@@ -33,9 +33,9 @@ jobs:
       - name: Install CadQuery and pytest
         shell: bash --login {0}
         run: |
-          mamba install freecad
-          mamba install -c cadquery -c conda-forge cadquery=master
-          mamba install -c anaconda pytest
+          conda install freecad
+          conda install -c cadquery -c conda-forge cadquery=master
+          conda install -c anaconda pytest
 
       # Runs the tests
       - name: Run tests
