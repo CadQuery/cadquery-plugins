@@ -33,7 +33,7 @@ jobs:
       - name: Install CadQuery and pytest
         shell: bash --login {0}
         run: |
-          conda install freecad
+          conda install conda-forge::freecad
           conda install -c cadquery -c conda-forge cadquery=master
           conda install -c anaconda pytest
 
