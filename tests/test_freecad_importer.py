@@ -33,7 +33,7 @@ def test_parametric_import():
     # We need to find the path to our FreeCAD test files
     test_dir_path = Path(__file__).resolve().parent
     parametric_file_path = os.path.join(test_dir_path, "testdata", "base_shelf.FCStd")
-
+    print(parametric_file_path)
     # First import the model with default parameters and make sure the volume is as expected
     result = import_freecad_part(parametric_file_path)
     vol = result.val().Volume()
