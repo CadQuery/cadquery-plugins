@@ -93,7 +93,7 @@ def _fc_path():
             "c:/apps/FreeCAD 0.15/bin",
             "c:/apps/FreeCAD 0.16/bin",
             "c:/apps/FreeCAD 0.17/bin",
-            "C:/Miniconda/envs/freecad/bin"
+            "C:/Miniconda/envs/freecad/bin",
         ]:
             if os.path.exists(_PATH):
                 return _PATH
