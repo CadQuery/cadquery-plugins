@@ -16,99 +16,100 @@ def _fc_path():
     """
 
     # Look for FREECAD_LIB env variable
-    _PATH = os.environ.get('FREECAD_LIB', '')
+    _PATH = os.environ.get("FREECAD_LIB", "")
     if _PATH and os.path.exists(_PATH):
         return _PATH
 
     # Try to guess if using Anaconda
-    if 'env' in sys.prefix:
-        if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
-            _PATH = os.path.join(sys.prefix,'lib')
+    if "env" in sys.prefix:
+        if sys.platform.startswith("linux") or sys.platform.startswith("darwin"):
+            _PATH = os.path.join(sys.prefix, "lib")
             # return PATH if FreeCAD.[so,pyd] is present
-            if len(glob.glob(os.path.join(_PATH,'FreeCAD.so'))) > 0:
+            if len(glob.glob(os.path.join(_PATH, "FreeCAD.so"))) > 0:
                 return _PATH
-        elif sys.platform.startswith('win'):
-            _PATH = os.path.join(sys.prefix,'Library','bin')
+        elif sys.platform.startswith("win"):
+            _PATH = os.path.join(sys.prefix, "Library", "bin")
             # return PATH if FreeCAD.[so,pyd] is present
-            if len(glob.glob(os.path.join(_PATH,'FreeCAD.pyd'))) > 0:
+            if len(glob.glob(os.path.join(_PATH, "FreeCAD.pyd"))) > 0:
                 return _PATH
 
-    if sys.platform.startswith('linux'):
-        home_dir = os.environ['HOME']
+    if sys.platform.startswith("linux"):
+        home_dir = os.environ["HOME"]
 
         # Make some dangerous assumptions...
         for _PATH in [
-                os.path.join(os.path.expanduser("~"), "lib/freecad/lib"),
-                "/usr/local/lib/freecad/lib",
-                "/usr/lib/freecad/lib",
-                "/opt/freecad/lib/",
-                "/usr/bin/freecad/lib",
-                "/usr/lib/freecad-daily/lib",
-                "/usr/lib/freecad",
-                "/usr/lib64/freecad/lib",
-                str(home_dir) + "/mambaforge/envs/freecad/lib/",
-                str(home_dir) + "/miniforge/envs/freecad/lib/",
-                str(home_dir) + "/conda/envs/freecad/lib/",
-                str(home_dir) + "/condaforge/envs/freecad/lib/"
-                ]:
+            os.path.join(os.path.expanduser("~"), "lib/freecad/lib"),
+            "/usr/local/lib/freecad/lib",
+            "/usr/lib/freecad/lib",
+            "/opt/freecad/lib/",
+            "/usr/bin/freecad/lib",
+            "/usr/lib/freecad-daily/lib",
+            "/usr/lib/freecad",
+            "/usr/lib64/freecad/lib",
+            str(home_dir) + "/mambaforge/envs/freecad/lib/",
+            str(home_dir) + "/miniforge/envs/freecad/lib/",
+            str(home_dir) + "/conda/envs/freecad/lib/",
+            str(home_dir) + "/condaforge/envs/freecad/lib/",
+        ]:
             if os.path.exists(_PATH):
                 return _PATH
 
-    elif sys.platform.startswith('win'):
+    elif sys.platform.startswith("win"):
         # Try all the usual suspects
         for _PATH in [
-                "c:/Program Files/FreeCAD0.12/bin",
-                "c:/Program Files/FreeCAD0.13/bin",
-                "c:/Program Files/FreeCAD0.14/bin",
-                "c:/Program Files/FreeCAD0.15/bin",
-                "c:/Program Files/FreeCAD0.16/bin",
-                "c:/Program Files/FreeCAD0.17/bin",
-                "c:/Program Files (x86)/FreeCAD0.12/bin",
-                "c:/Program Files (x86)/FreeCAD0.13/bin",
-                "c:/Program Files (x86)/FreeCAD0.14/bin",
-                "c:/Program Files (x86)/FreeCAD0.15/bin",
-                "c:/Program Files (x86)/FreeCAD0.16/bin",
-                "c:/Program Files (x86)/FreeCAD0.17/bin",
-                "c:/apps/FreeCAD0.12/bin",
-                "c:/apps/FreeCAD0.13/bin",
-                "c:/apps/FreeCAD0.14/bin",
-                "c:/apps/FreeCAD0.15/bin",
-                "c:/apps/FreeCAD0.16/bin",
-                "c:/apps/FreeCAD0.17/bin",
-                "c:/Program Files/FreeCAD 0.12/bin",
-                "c:/Program Files/FreeCAD 0.13/bin",
-                "c:/Program Files/FreeCAD 0.14/bin",
-                "c:/Program Files/FreeCAD 0.15/bin",
-                "c:/Program Files/FreeCAD 0.16/bin",
-                "c:/Program Files/FreeCAD 0.17/bin",
-                "c:/Program Files (x86)/FreeCAD 0.12/bin",
-                "c:/Program Files (x86)/FreeCAD 0.13/bin",
-                "c:/Program Files (x86)/FreeCAD 0.14/bin",
-                "c:/Program Files (x86)/FreeCAD 0.15/bin",
-                "c:/Program Files (x86)/FreeCAD 0.16/bin",
-                "c:/Program Files (x86)/FreeCAD 0.17/bin",
-                "c:/apps/FreeCAD 0.12/bin",
-                "c:/apps/FreeCAD 0.13/bin",
-                "c:/apps/FreeCAD 0.14/bin",
-                "c:/apps/FreeCAD 0.15/bin",
-                "c:/apps/FreeCAD 0.16/bin",
-                "c:/apps/FreeCAD 0.17/bin",
-                ]:
+            "c:/Program Files/FreeCAD0.12/bin",
+            "c:/Program Files/FreeCAD0.13/bin",
+            "c:/Program Files/FreeCAD0.14/bin",
+            "c:/Program Files/FreeCAD0.15/bin",
+            "c:/Program Files/FreeCAD0.16/bin",
+            "c:/Program Files/FreeCAD0.17/bin",
+            "c:/Program Files (x86)/FreeCAD0.12/bin",
+            "c:/Program Files (x86)/FreeCAD0.13/bin",
+            "c:/Program Files (x86)/FreeCAD0.14/bin",
+            "c:/Program Files (x86)/FreeCAD0.15/bin",
+            "c:/Program Files (x86)/FreeCAD0.16/bin",
+            "c:/Program Files (x86)/FreeCAD0.17/bin",
+            "c:/apps/FreeCAD0.12/bin",
+            "c:/apps/FreeCAD0.13/bin",
+            "c:/apps/FreeCAD0.14/bin",
+            "c:/apps/FreeCAD0.15/bin",
+            "c:/apps/FreeCAD0.16/bin",
+            "c:/apps/FreeCAD0.17/bin",
+            "c:/Program Files/FreeCAD 0.12/bin",
+            "c:/Program Files/FreeCAD 0.13/bin",
+            "c:/Program Files/FreeCAD 0.14/bin",
+            "c:/Program Files/FreeCAD 0.15/bin",
+            "c:/Program Files/FreeCAD 0.16/bin",
+            "c:/Program Files/FreeCAD 0.17/bin",
+            "c:/Program Files (x86)/FreeCAD 0.12/bin",
+            "c:/Program Files (x86)/FreeCAD 0.13/bin",
+            "c:/Program Files (x86)/FreeCAD 0.14/bin",
+            "c:/Program Files (x86)/FreeCAD 0.15/bin",
+            "c:/Program Files (x86)/FreeCAD 0.16/bin",
+            "c:/Program Files (x86)/FreeCAD 0.17/bin",
+            "c:/apps/FreeCAD 0.12/bin",
+            "c:/apps/FreeCAD 0.13/bin",
+            "c:/apps/FreeCAD 0.14/bin",
+            "c:/apps/FreeCAD 0.15/bin",
+            "c:/apps/FreeCAD 0.16/bin",
+            "c:/apps/FreeCAD 0.17/bin",
+        ]:
             if os.path.exists(_PATH):
                 return _PATH
 
-    elif sys.platform.startswith('darwin'):
+    elif sys.platform.startswith("darwin"):
         # Assume we're dealing with a Mac
         for _PATH in [
-                "/Applications/FreeCAD.app/Contents/lib",
-                "/Applications/FreeCAD.app/Contents/Resources/lib",
-                os.path.join(os.path.expanduser("~"),
-                             "Library/Application Support/FreeCAD/lib"),
-                ]:
+            "/Applications/FreeCAD.app/Contents/lib",
+            "/Applications/FreeCAD.app/Contents/Resources/lib",
+            os.path.join(
+                os.path.expanduser("~"), "Library/Application Support/FreeCAD/lib"
+            ),
+        ]:
             if os.path.exists(_PATH):
                 return _PATH
 
-    raise ImportError('Unable to determine freecad library path')
+    raise ImportError("Unable to determine freecad library path")
 
 
 def import_part_static(fc_part_path):
@@ -131,7 +132,7 @@ def import_part_static(fc_part_path):
     # A temporary directory is required to extract the zipped files to
     with tempfile.TemporaryDirectory() as temp_dir:
         # Extract the contents of the file
-        with zipfile.ZipFile(fc_part_path, 'r') as zip_ref:
+        with zipfile.ZipFile(fc_part_path, "r") as zip_ref:
             zip_ref.extractall(temp_dir)
 
         # Open the file with CadQuery
@@ -163,7 +164,9 @@ def import_part_parametric(fc_part_path, parameters=None):
         # It should be possible to import FreeCAD now
         import FreeCAD
     except Exception as err:
-        print("FreeCAD must be installed, and it must be possible to import it in Python.")
+        print(
+            "FreeCAD must be installed, and it must be possible to import it in Python."
+        )
         return None
 
     # Open the part file in FreeCAD and get the spreadsheet so we can update it
@@ -251,47 +254,56 @@ def get_freecad_part_parameters(fc_part_path, name_column_letter, value_column_l
     # A temporary directory is required to extract the zipped files to
     with tempfile.TemporaryDirectory() as temp_dir:
         # Extract the contents of the file
-        with zipfile.ZipFile(fc_part_path, 'r') as zip_ref:
+        with zipfile.ZipFile(fc_part_path, "r") as zip_ref:
             zip_ref.extractall(temp_dir)
 
         # parse the Document.xml file that holds metadata like the spreadsheet
-        tree = ET.parse(os.path.join(temp_dir, 'Document.xml'))
+        tree = ET.parse(os.path.join(temp_dir, "Document.xml"))
         root = tree.getroot()
-        objects = root.find('ObjectData')
+        objects = root.find("ObjectData")
         for object in objects.iter("Object"):
-            if object.get('name') == "Spreadsheet":
-                props = object.find('Properties')
+            if object.get("name") == "Spreadsheet":
+                props = object.find("Properties")
                 for prop in props.iter("Property"):
-                    if prop.get('name') == "cells":
+                    if prop.get("name") == "cells":
                         for cell in prop.find("Cells").iter():
-                            if cell is None or cell.get('content') is None:
+                            if cell is None or cell.get("content") is None:
                                 continue
 
                             # Determine whether we have a parameter name or a parameter value
-                            if "=" not in cell.get('content'):
+                            if "=" not in cell.get("content"):
                                 # Make sure we did not get a description
-                                if cell.get('address')[0] != name_column_letter and cell.get('address')[0] != value_column_letter:
+                                if (
+                                    cell.get("address")[0] != name_column_letter
+                                    and cell.get("address")[0] != value_column_letter
+                                ):
                                     continue
 
                                 # Start a parameter entry in the dictionary
-                                parameters[cell.get('content')] = {}
-                            elif "=" in cell.get('content'):
+                                parameters[cell.get("content")] = {}
+                            elif "=" in cell.get("content"):
                                 # Extract the units
-                                units = "".join(re.findall("[a-zA-Z]+", cell.get('content')))
+                                units = "".join(
+                                    re.findall("[a-zA-Z]+", cell.get("content"))
+                                )
                                 if units is not None:
-                                    parameters[cell.get('alias')]["units"] = units
+                                    parameters[cell.get("alias")]["units"] = units
                                 else:
-                                    parameters[cell.get('alias')]["units"] = "N/A"
+                                    parameters[cell.get("alias")]["units"] = "N/A"
 
                                 # Extract the parameter value and store it
-                                value = cell.get('content').replace("=", "").replace(units, "")
-                                parameters[cell.get('alias')]["value"] = value
+                                value = (
+                                    cell.get("content")
+                                    .replace("=", "")
+                                    .replace(units, "")
+                                )
+                                parameters[cell.get("alias")]["value"] = value
                 break
             else:
                 continue
 
         return parameters
-        
+
 
 # Patch the FreeCAD import functions into CadQuery's importers package
 cq.importers.import_freecad_part = import_freecad_part
