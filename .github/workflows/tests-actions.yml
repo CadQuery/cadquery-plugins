@@ -24,18 +24,16 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/setup-python@v5
         with:
-          miniconda-version: "latest"
-          python-version: 3.10
-          activate-environment: test
+          python-version: '3.10'
 
       # Installs CadQuery and pytest so that the test can be run
       - name: Install CadQuery and pytest
         shell: bash --login {0}
         run: |
-          conda install -c cadquery -c conda-forge cadquery=master
-          conda install -c anaconda pytest
+          pip install cadquery
+          pip install pytest
 
       # Runs the tests
       - name: Run tests
@@ -48,16 +46,14 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/setup-python@v5
         with:
-          miniconda-version: "latest"
-          python-version: 3.10
-          activate-environment: test
+          python-version: '3.10'
       - name: Install CadQuery and pytest
         shell: bash --login {0}
         run: |
-          conda install -c cadquery -c conda-forge cadquery=master
-          conda install -c anaconda pytest
+          pip install cadquery
+          pip install pytest
       - name: Run tests
         shell: bash --login {0}
         run: |
@@ -68,16 +64,14 @@ jobs:
     runs-on: "windows-latest"
     steps:
       - uses: actions/checkout@v2
-      - uses: conda-incubator/setup-miniconda@v2
+      - uses: actions/setup-python@v5
         with:
-          miniconda-version: "latest"
-          python-version: 3.10
-          activate-environment: test
+          python-version: '3.10'
       - name: Install CadQuery and pytest
         shell: pwsh
         run: |
-          conda install -c cadquery -c conda-forge cadquery=master
-          conda install -c anaconda pytest
+          pip install cadquery
+          pip install pytest
       - name: Run tests
         shell: pwsh
         run: |
