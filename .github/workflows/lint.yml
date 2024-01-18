@@ -26,20 +26,11 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.10
 
       - name: Install Python dependencies
-        # grab the currently pinned black version from CQ. The `curl | grep`
-        # result will be an empty string if black is not pinned. If black is
-        # not pinned in CQ, final command will reduce to
-        # `pip install black flake8`.
+        # CadQuery runs a customized version of black
         run: |
-          echo "grabbing black version from CQ"
-          black_ver=$(curl "https://raw.githubusercontent.com/CadQuery/cadquery/master/environment.yml" | grep -oP '(?<=black=).*')
-          echo "got: $black_ver"
-          if [[ -n "$black_ver" ]]; then
-              black_ver="==$black_ver";
-          fi
           pip install git+https://github.com/cadquery/black.git@cq
   
       # Runs the lint check against the repo

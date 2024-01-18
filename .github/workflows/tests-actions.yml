@@ -27,7 +27,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
-          python-version: 3.8
+          python-version: 3.10
           activate-environment: test
 
       # Installs CadQuery and pytest so that the test can be run
@@ -51,7 +51,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
-          python-version: 3.8
+          python-version: 3.10
           activate-environment: test
       - name: Install CadQuery and pytest
         shell: bash --login {0}
@@ -71,7 +71,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v2
         with:
           miniconda-version: "latest"
-          python-version: 3.8
+          python-version: 3.10
           activate-environment: test
       - name: Install CadQuery and pytest
         shell: pwsh
