@@ -1,17 +1,17 @@
 from setuptools import setup, find_packages
 
 # Change these variables to set the information for your plugin
-version = "1.0.0"  # Please update this version number when updating the plugin
-plugin_name = "sampleplugin"  # The name of your plugin
-description = "What does your plugin do?"
-long_description = "Extended explanation of your plugin"
-author = "Your name"
-author_email = "optional, you can put GitHub user name instead"
-packages = []  # List of packages that will be installed with this plugin
-py_modules = ["sampleplugin"]  # Put the name of your plugin's .py file here
+version = "1.0.0"
+plugin_name = "freecad_import"  # The name of your plugin
+description = "Adds FreeCAD part import support to CadQuery"
+long_description = "Allows import the BRep objects from inside FCStd files, and supports altering their parameters before doing so."
+author = "Jeremy Wright"
+author_email = "@jmwright"
+packages = []
+py_modules = ["freecad_importer"]
 install_requires = (
     []
-)  # Any dependencies that pip also needs to install to make this plugin work
+)
 
 
 setup(
