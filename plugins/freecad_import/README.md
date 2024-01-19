@@ -14,7 +14,7 @@ mamba install freecad:freecad
 Assuming that you have pip and git installed, the following line can be used to install this plugin.
 
 ```
-pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=freecad_importer&subdirectory=plugins/freecad_importer"
+pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=freecad_import&subdirectory=plugins/freecad_import"
 ```
 
 ## Dependencies
