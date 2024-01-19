@@ -9,9 +9,7 @@ author = "Jeremy Wright"
 author_email = "@jmwright"
 packages = []
 py_modules = ["freecad_importer"]
-install_requires = (
-    []
-)
+install_requires = []
 
 
 setup(
