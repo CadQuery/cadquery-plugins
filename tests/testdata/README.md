@@ -1,0 +1,1 @@
+The base_shelf.FCStd file came from the [Nimble project repository](https://github.com/Wakoma/nimble/tree/master/src/mech/freecad) and the same license and attribution applies as is set on that repository.
