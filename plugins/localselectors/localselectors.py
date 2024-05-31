@@ -4,7 +4,6 @@ from cadquery.occ_impl.geom import Vector
 from cadquery.occ_impl.shape_protocols import (
     geom_LUT_EDGE,
     geom_LUT_FACE,
-    ShapeProtocol
 )
 
 from pyparsing import (
@@ -19,11 +18,6 @@ from pyparsing import (
     infixNotation,
     opAssoc,
 )
-
-from functools import reduce
-from typing import Iterable, List, Sequence, TypeVar, cast
-
-Shape = TypeVar("Shape", bound=ShapeProtocol)
 
 def _makeGrammar():
     """
@@ -88,37 +82,13 @@ def _makeGrammar():
     )
 
 
-cq.selectors._grammar = _makeGrammar()  # make a grammar instance
+old_getVector = cq.selectors._SimpleStringSyntaxSelector._getVector
 
-old_SimpleStringSyntaxSelector = cq.selectors._SimpleStringSyntaxSelector
-class _SimpleStringSyntaxSelector(old_SimpleStringSyntaxSelector):
-    """
-    This is a private class that converts a parseResults object into a simple
-    selector object
-    """
-
-    # moved out here so I can hackishly change them at run time
-    local_axes = {
-        "x": Vector(1, 0, 0),
-        "y": Vector(0, 1, 0),
-        "z": Vector(0, 0, 1),
-        "xy": Vector(1, 1, 0),
-        "yz": Vector(0, 1, 1),
-        "xz": Vector(1, 0, 1),
-    }
-
-
-    def __init__(self, parseResults):
-        super().__init__(parseResults)
-
-    def _getVector(self, pr):
-        if "simple_dir" in pr and  pr.simple_dir in _SimpleStringSyntaxSelector.local_axes:
-            return _SimpleStringSyntaxSelector.local_axes[pr.simple_dir]
-        else:
-            return super()._getVector(pr)
-
-cq.selectors._SimpleStringSyntaxSelector = _SimpleStringSyntaxSelector
-cq.selectors._expression_grammar = cq.selectors._makeExpressionGrammar(cq.selectors._grammar)
+def _getVector(self, pr):
+    if "simple_dir" in pr and  pr.simple_dir in cq.selectors._SimpleStringSyntaxSelector.local_axes:
+        return cq.selectors._SimpleStringSyntaxSelector.local_axes[pr.simple_dir]
+    else:
+        return old_getVector(self, pr)
 
 class LocalCoordinates:
     def __init__(self, plane):
@@ -126,7 +96,7 @@ class LocalCoordinates:
         self.old_axes = None
 
     def __enter__(self):
-        self.old_axes, _SimpleStringSyntaxSelector.local_axes = (_SimpleStringSyntaxSelector.local_axes, 
+        self.old_axes, cq.selectors._SimpleStringSyntaxSelector.local_axes = (cq.selectors._SimpleStringSyntaxSelector.local_axes, 
             {
                 'x': self.plane.xDir,
                 'y': self.plane.yDir,
@@ -137,11 +107,10 @@ class LocalCoordinates:
             })
 
     def __exit__(self, _exc_type, _exc_value, _traceback):
-        _SimpleStringSyntaxSelector.local_axes = self.old_axes
+        cq.selectors._SimpleStringSyntaxSelector.local_axes = self.old_axes
 
 
 def _filter(self, objs, selector):
-    # TODO adjust _SimpleStringSyntaxSelector.axes
     selectorObj: Selector
     if selector:
         if isinstance(selector, str):
@@ -154,5 +123,18 @@ def _filter(self, objs, selector):
         toReturn = objs
 
     return toReturn
+
+cq.selectors._SimpleStringSyntaxSelector.local_axes = {
+        "x": Vector(1, 0, 0),
+        "y": Vector(0, 1, 0),
+        "z": Vector(0, 0, 1),
+        "xy": Vector(1, 1, 0),
+        "yz": Vector(0, 1, 1),
+        "xz": Vector(1, 0, 1),
+}
+cq.selectors._SimpleStringSyntaxSelector._getVector = _getVector
+
+cq.selectors._grammar = _makeGrammar()  # make a grammar instance
+cq.selectors._expression_grammar = cq.selectors._makeExpressionGrammar(cq.selectors._grammar)
 
 cq.Workplane._filter = _filter
