@@ -90,20 +90,15 @@ def _makeGrammar():
 
 cq.selectors._grammar = _makeGrammar()  # make a grammar instance
 
-class _SimpleStringSyntaxSelector(cq.Selector):
+old_SimpleStringSyntaxSelector = cq.selectors._SimpleStringSyntaxSelector
+class _SimpleStringSyntaxSelector(old_SimpleStringSyntaxSelector):
     """
     This is a private class that converts a parseResults object into a simple
     selector object
     """
 
     # moved out here so I can hackishly change them at run time
-    axes = {
-        "X": Vector(1, 0, 0),
-        "Y": Vector(0, 1, 0),
-        "Z": Vector(0, 0, 1),
-        "XY": Vector(1, 1, 0),
-        "YZ": Vector(0, 1, 1),
-        "XZ": Vector(1, 0, 1),
+    local_axes = {
         "x": Vector(1, 0, 0),
         "y": Vector(0, 1, 0),
         "z": Vector(0, 0, 1),
@@ -111,91 +106,17 @@ class _SimpleStringSyntaxSelector(cq.Selector):
         "yz": Vector(0, 1, 1),
         "xz": Vector(1, 0, 1),
     }
+
+
     def __init__(self, parseResults):
-
-        # define all token to object mappings
-
-        self.namedViews = {
-            "front": (Vector(0, 0, 1), True),
-            "back": (Vector(0, 0, 1), False),
-            "left": (Vector(1, 0, 0), False),
-            "right": (Vector(1, 0, 0), True),
-            "top": (Vector(0, 1, 0), True),
-            "bottom": (Vector(0, 1, 0), False),
-        }
-
-        self.operatorMinMax = {
-            ">": True,
-            ">>": True,
-            "<": False,
-            "<<": False,
-        }
-
-        self.operator = {
-            "+": cq.selectors.DirectionSelector,
-            "-": lambda v: cq.selectors.DirectionSelector(-v),
-            "#": cq.selectors.PerpendicularDirSelector,
-            "|": cq.selectors.ParallelDirSelector,
-        }
-
-        self.parseResults = parseResults
-        self.mySelector = self._chooseSelector(parseResults)
-
-    def _chooseSelector(self, pr):
-        """
-        Sets up the underlying filters accordingly
-        """
-        if "only_dir" in pr:
-            vec = self._getVector(pr)
-            return cq.selectors.DirectionSelector(vec)
-
-        elif "type_op" in pr:
-            return cq.selectors.TypeSelector(pr.cq_type)
-
-        elif "dir_op" in pr:
-            vec = self._getVector(pr)
-            minmax = self.operatorMinMax[pr.dir_op]
-
-            if "index" in pr:
-                return cq.selectors.DirectionNthSelector(
-                    vec, int("".join(pr.index.asList())), minmax
-                )
-            else:
-                return cq.selectors.DirectionMinMaxSelector(vec, minmax)
-
-        elif "center_nth_op" in pr:
-            vec = self._getVector(pr)
-            minmax = self.operatorMinMax[pr.center_nth_op]
-
-            if "index" in pr:
-                return cq.selectors.CenterNthSelector(vec, int("".join(pr.index.asList())), minmax)
-            else:
-                return cq.selectors.CenterNthSelector(vec, -1, minmax)
-
-        elif "other_op" in pr:
-            vec = self._getVector(pr)
-            return self.operator[pr.other_op](vec)
-
-        else:
-            args = self.namedViews[pr.named_view]
-            return cq.selectors.DirectionMinMaxSelector(*args)
+        super().__init__(parseResults)
 
     def _getVector(self, pr):
-        """
-        Translate parsed vector string into a CQ Vector
-        """
-        if "vector_dir" in pr:
-            vec = pr.vector_dir
-            return Vector(float(vec.x), float(vec.y), float(vec.z))
+        if "simple_dir" in pr and  pr.simple_dir in _SimpleStringSyntaxSelector.local_axes:
+            return _SimpleStringSyntaxSelector.local_axes[pr.simple_dir]
         else:
-            return _SimpleStringSyntaxSelector.axes[pr.simple_dir]
+            return super()._getVector(pr)
 
-    def filter(self, objectList: Sequence[Shape]):
-        r"""
-        selects minimum, maximum, positive or negative values relative to a direction
-        ``[+|-|<|>|] <X|Y|Z>``
-        """
-        return self.mySelector.filter(objectList)
 cq.selectors._SimpleStringSyntaxSelector = _SimpleStringSyntaxSelector
 cq.selectors._expression_grammar = cq.selectors._makeExpressionGrammar(cq.selectors._grammar)
 
@@ -205,25 +126,21 @@ class LocalCoordinates:
         self.old_axes = None
 
     def __enter__(self):
-        self.old_axes = {d:_SimpleStringSyntaxSelector.axes[d] for d in ['x', 'y', 'z', 'xy', 'xz', 'yz']}
-        new_axes = {
-            'x': self.plane.xDir,
-            'y': self.plane.yDir,
-            'z': self.plane.zDir,
-            'xy': self.plane.xDir + self.plane.yDir,
-            'yz': self.plane.yDir + self.plane.zDir,
-            'xz': self.plane.xDir + self.plane.zDir,
-        }
-        for d, v in new_axes.items():
-            _SimpleStringSyntaxSelector.axes[d] = v
+        self.old_axes, _SimpleStringSyntaxSelector.local_axes = (_SimpleStringSyntaxSelector.local_axes, 
+            {
+                'x': self.plane.xDir,
+                'y': self.plane.yDir,
+                'z': self.plane.zDir,
+                'xy': self.plane.xDir + self.plane.yDir,
+                'yz': self.plane.yDir + self.plane.zDir,
+                'xz': self.plane.xDir + self.plane.zDir,
+            })
 
     def __exit__(self, _exc_type, _exc_value, _traceback):
-        for d, v in self.old_axes.items():
-            _SimpleStringSyntaxSelector.axes[d] = v
+        _SimpleStringSyntaxSelector.local_axes = self.old_axes
 
 
 def _filter(self, objs, selector):
-    print("debug")
     # TODO adjust _SimpleStringSyntaxSelector.axes
     selectorObj: Selector
     if selector:
