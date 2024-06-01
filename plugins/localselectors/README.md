@@ -26,7 +26,7 @@ import cadquery as cq
 result = (cq.Workplane().rect(50, 50)
                         .extrude(50))
 
-new_workplane = (result.faces(">x") # this should be the same as '>x'
+new_workplane = (result.faces(">x") # this should be the same as '>X' because we're starting off in the default coordinate system
                         .workplane())
 result2 = (new_workplane.rect(30, 30)
            .extrude(30))
