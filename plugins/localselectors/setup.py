@@ -4,7 +4,9 @@ from setuptools import setup, find_packages
 version = "1.0.0"  # Please update this version number when updating the plugin
 plugin_name = "localselectors"  # The name of your plugin
 description = "Adds local coordinator selectors to CadQuery"
-long_description = "Monkey patches in local coordinate selectors so you can use things like '>x'"
+long_description = (
+    "Monkey patches in local coordinate selectors so you can use things like '>x'"
+)
 author = "Kelvin Ly"
 author_email = "cactorium"
 packages = []  # List of packages that will be installed with this plugin

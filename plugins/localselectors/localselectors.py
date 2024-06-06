@@ -19,6 +19,7 @@ from pyparsing import (
     opAssoc,
 )
 
+
 def _makeGrammar():
     """
     Define the simple string selector grammar using PyParsing
@@ -41,7 +42,9 @@ def _makeGrammar():
     )
 
     # direction definition
-    simple_dir = oneOf(["X", "Y", "Z", "XY", "XZ", "YZ"] + ["x", "y", "z", "xy", "xz", "yz"])
+    simple_dir = oneOf(
+        ["X", "Y", "Z", "XY", "XZ", "YZ"] + ["x", "y", "z", "xy", "xz", "yz"]
+    )
     direction = simple_dir("simple_dir") | vector("vector_dir")
 
     # CQ type definition
@@ -84,11 +87,14 @@ def _makeGrammar():
 
 old_getVector = cq.selectors._SimpleStringSyntaxSelector._getVector
 
+
 def _getVector(self, pr):
-    if "simple_dir" in pr and  pr.simple_dir in cq.selectors._SimpleStringSyntaxSelector.local_axes:
+    if ("simple_dir" in pr and
+            pr.simple_dir in cq.selectors._SimpleStringSyntaxSelector.local_axes):
         return cq.selectors._SimpleStringSyntaxSelector.local_axes[pr.simple_dir]
     else:
         return old_getVector(self, pr)
+
 
 class LocalCoordinates:
     def __init__(self, plane):
@@ -96,7 +102,8 @@ class LocalCoordinates:
         self.old_axes = None
 
     def __enter__(self):
-        self.old_axes, cq.selectors._SimpleStringSyntaxSelector.local_axes = (cq.selectors._SimpleStringSyntaxSelector.local_axes, 
+        self.old_axes, cq.selectors._SimpleStringSyntaxSelector.local_axes = (
+            cq.selectors._SimpleStringSyntaxSelector.local_axes, 
             {
                 'x': self.plane.xDir,
                 'y': self.plane.yDir,
@@ -104,7 +111,8 @@ class LocalCoordinates:
                 'xy': self.plane.xDir + self.plane.yDir,
                 'yz': self.plane.yDir + self.plane.zDir,
                 'xz': self.plane.xDir + self.plane.zDir,
-            })
+            },
+        )
 
     def __exit__(self, _exc_type, _exc_value, _traceback):
         cq.selectors._SimpleStringSyntaxSelector.local_axes = self.old_axes
@@ -125,16 +133,18 @@ def _filter(self, objs, selector):
     return toReturn
 
 cq.selectors._SimpleStringSyntaxSelector.local_axes = {
-        "x": Vector(1, 0, 0),
-        "y": Vector(0, 1, 0),
-        "z": Vector(0, 0, 1),
-        "xy": Vector(1, 1, 0),
-        "yz": Vector(0, 1, 1),
-        "xz": Vector(1, 0, 1),
+    "x": Vector(1, 0, 0),
+    "y": Vector(0, 1, 0),
+    "z": Vector(0, 0, 1),
+    "xy": Vector(1, 1, 0),
+    "yz": Vector(0, 1, 1),
+    "xz": Vector(1, 0, 1),
 }
 cq.selectors._SimpleStringSyntaxSelector._getVector = _getVector
 
 cq.selectors._grammar = _makeGrammar()  # make a grammar instance
-cq.selectors._expression_grammar = cq.selectors._makeExpressionGrammar(cq.selectors._grammar)
+cq.selectors._expression_grammar = cq.selectors._makeExpressionGrammar(
+    cq.selectors._grammar
+)
 
 cq.Workplane._filter = _filter
