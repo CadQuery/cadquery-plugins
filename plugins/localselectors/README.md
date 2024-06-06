@@ -1,6 +1,6 @@
 # Sample Plugin
 
-This plugin modifies `Workplane` selectors so that they can be used to specify axes in the local coordinate place.
+This plugin modifies `Workplane` selectors so that they can be used to specify axes in the local coordinate plane.
 This is done by using the lowercase letters `x`, `y`, and `z` instead of the uppercase ones.
 
 ## Installation
