@@ -13,7 +13,7 @@ pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=localco
 ## Dependencies
 
 This plugin has no dependencies other than the cadquery library. To install CadQuery, follow the [instructions in its readme](https://github.com/CadQuery/cadquery#getting-started).
-It uses a lot of internal structures, so it may break more easily on later versions of CadQuery more easily than other plugins.
+It uses a lot of internal structures, so it may break more easily on later versions of CadQuery than other plugins.
 It was tested on CadQuery 2.5, feel free to post an issue in my [fork](https://github.com/cactorium/cadquery-plugins) if you run into any issues
 
 ## Usage
