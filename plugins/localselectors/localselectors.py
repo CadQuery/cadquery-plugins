@@ -49,7 +49,8 @@ def _makeGrammar():
 
     # CQ type definition
     cqtype = oneOf(
-        set(geom_LUT_EDGE.values()) | set(geom_LUT_FACE.values()), caseless=True,
+        set(geom_LUT_EDGE.values()) | set(geom_LUT_FACE.values()),
+        caseless=True,
     )
     cqtype = cqtype.setParseAction(pyparsing_common.upcaseTokens)
 
@@ -89,8 +90,10 @@ old_getVector = cq.selectors._SimpleStringSyntaxSelector._getVector
 
 
 def _getVector(self, pr):
-    if ("simple_dir" in pr and
-            pr.simple_dir in cq.selectors._SimpleStringSyntaxSelector.local_axes):
+    if (
+        "simple_dir" in pr
+        and pr.simple_dir in cq.selectors._SimpleStringSyntaxSelector.local_axes
+    ):
         return cq.selectors._SimpleStringSyntaxSelector.local_axes[pr.simple_dir]
     else:
         return old_getVector(self, pr)
@@ -103,14 +106,14 @@ class LocalCoordinates:
 
     def __enter__(self):
         self.old_axes, cq.selectors._SimpleStringSyntaxSelector.local_axes = (
-            cq.selectors._SimpleStringSyntaxSelector.local_axes, 
+            cq.selectors._SimpleStringSyntaxSelector.local_axes,
             {
-                'x': self.plane.xDir,
-                'y': self.plane.yDir,
-                'z': self.plane.zDir,
-                'xy': self.plane.xDir + self.plane.yDir,
-                'yz': self.plane.yDir + self.plane.zDir,
-                'xz': self.plane.xDir + self.plane.zDir,
+                "x": self.plane.xDir,
+                "y": self.plane.yDir,
+                "z": self.plane.zDir,
+                "xy": self.plane.xDir + self.plane.yDir,
+                "yz": self.plane.yDir + self.plane.zDir,
+                "xz": self.plane.xDir + self.plane.zDir,
             },
         )
 
@@ -131,6 +134,7 @@ def _filter(self, objs, selector):
         toReturn = objs
 
     return toReturn
+
 
 cq.selectors._SimpleStringSyntaxSelector.local_axes = {
     "x": Vector(1, 0, 0),
