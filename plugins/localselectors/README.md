@@ -6,7 +6,7 @@ This is done by using the lowercase letters `x`, `y`, and `z` instead of the upp
 ## Installation
 
 ```
-pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=localcoordinates&subdirectory=plugins/localcoordinates"
+pip install -e "git+https://github.com/CadQuery/cadquery-plugins.git#egg=localselectors&subdirectory=plugins/localselectors"
 ```
 
 
@@ -22,6 +22,7 @@ To use this plugin after it has been installed, import it to automatically patch
 
 ```python
 import cadquery as cq
+import localselectors # Adds local selectors to cadquery.Workplane
 
 result = (cq.Workplane().rect(50, 50)
                         .extrude(50))
